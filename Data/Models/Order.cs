@@ -10,4 +10,5 @@ public class Order
     public DateTime OrderTime { get; set; }
     public Status status { get; set; }
     public int Price { get; set; }
+    private List<DishInCart> DishesInCart { get; set; }
 }

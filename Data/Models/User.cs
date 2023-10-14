@@ -6,12 +6,18 @@ public class User
 {
     [Key]
     public Guid Id { get; set; }
+    [Required]
     public String FullName { get; set; }
+    [Required]
     public DateTime BirthDate { get; set; }
+    [Required]
     public Gender gender { get; set; }
+    [Required]
     public String Phone { get; set; }
+    [Required]
     public String Email { get; set; }
+    [Required]
     public Guid Address { get; set; }
-    public Rating rating;
-    public Order order;
+    public Rating Rating { get; set; }
+    public Order Order { get; set; }
 }
