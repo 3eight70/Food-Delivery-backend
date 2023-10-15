@@ -15,6 +15,27 @@ public class UserController: ControllerBase
         userService = user;
     }
     
+    [HttpPost]
+    [Route("logout")]
+    public ActionResult<User> Logout()
+    {
+        return null;
+    }
+    
+    [HttpPost]
+    [Route("login")]
+    public ActionResult<User> Login()
+    {
+        return null;
+    }
+    
+    [HttpPost]
+    [Route("register")]
+    public ActionResult<User> Register()
+    {
+        return userService.RegisterUser();
+    }
+    
     [HttpGet]
     [Route("profile")]
     public ActionResult<User> Get()
@@ -22,11 +43,10 @@ public class UserController: ControllerBase
         return userService.GetUserProfile();
     }
 
-    [HttpPost]
-    [Route("logout")]
-    public ActionResult<User> Post()
+    [HttpPut]
+    [Route("profile")]
+    public ActionResult<User> Edit()
     {
         return null;
     }
-    
 }
