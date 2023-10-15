@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_1.Data;
+using webNET_Hits_backend_aspnet_project_1.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
