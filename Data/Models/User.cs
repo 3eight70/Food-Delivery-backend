@@ -20,11 +20,10 @@ public class User
     [Required]
     public Guid Address { get; set; }
     [Required]
-    public String Password { get; set; }
     public Rating Rating { get; set; }
     public Order Order { get; set; }
 
-    public User(Guid id, String fullName, DateTime birthDate, Gender gender, String phone, String email, String password)
+    public User(Guid id, String fullName, DateTime birthDate, Gender gender, String phone, String email)
     {
         Id = id;
         FullName = fullName;
@@ -32,6 +31,5 @@ public class User
         this.gender = gender;
         Phone = phone;
         Email = email;
-        Password = password;
     }
 }
