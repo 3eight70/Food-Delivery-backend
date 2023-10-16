@@ -16,16 +16,16 @@ public class UserController: ControllerBase
         userService = user;
     }
     
-    [HttpGet]
-    [Route("profile")]
-    public ActionResult<UserDTO> Get()
-    {
-        return userService.GetUserProfile();
-    }
-
     [HttpPost]
     [Route("logout")]
     public ActionResult<UserDTO> Logout()
+    {
+        return null;
+    }
+    
+    [HttpPost]
+    [Route("login")]
+    public ActionResult<UserDTO> Login()
     {
         return null;
     }
@@ -51,4 +51,17 @@ public class UserController: ControllerBase
         
     }
     
+    [HttpGet]
+    [Route("profile")]
+    public ActionResult<UserDTO> Get()
+    {
+        return userService.GetUserProfile();
+    }
+
+    [HttpPut]
+    [Route("profile")]
+    public ActionResult<User> Edit()
+    {
+        return null;
+    }
 }
