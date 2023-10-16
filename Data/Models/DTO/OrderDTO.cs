@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 
-namespace webNET_Hits_backend_aspnet_project_1.Models;
+namespace webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
-public class Order
+public class OrderDTO
 {
-    [Key]
-    public Guid Id { get; set; }
     [Required]
     public DateTime DeliveryTime { get; set; }
     [Required]

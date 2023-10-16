@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace webNET_Hits_backend_aspnet_project_1.Models;
+namespace webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
-public class Dish
+public class DishDTO
 {
-    [Key]
-    public Guid Id { get; set; }
     [Required]
     public String Name { get; set; }
     [Required]
@@ -14,7 +12,7 @@ public class Dish
     public String Photo { get; set; }
     [Required]
     public bool IsVegetarian { get; set; }
-    public Rating Rating { get; set; }
+    public Rating Rating;
     [Required]
     public Category Category { get; set; }
 }
