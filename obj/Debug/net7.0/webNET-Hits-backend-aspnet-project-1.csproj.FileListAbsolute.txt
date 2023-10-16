@@ -31,8 +31,6 @@ D:\Programming\webNET-Hits-backend-aspnet-project-1\obj\Debug\net7.0\refint\webN
 D:\Programming\webNET-Hits-backend-aspnet-project-1\obj\Debug\net7.0\webNET-Hits-backend-aspnet-project-1.pdb
 D:\Programming\webNET-Hits-backend-aspnet-project-1\obj\Debug\net7.0\webNET-Hits-backend-aspnet-project-1.genruntimeconfig.cache
 D:\Programming\webNET-Hits-backend-aspnet-project-1\obj\Debug\net7.0\ref\webNET-Hits-backend-aspnet-project-1.dll
-D:\Programming\webNET-Hits\bin\Debug\net7.0\appsetting.Development.json
-D:\Programming\webNET-Hits\bin\Debug\net7.0\appsettings.json
 D:\Programming\webNET-Hits\bin\Debug\net7.0\webNET-Hits-backend-aspnet-project-1.exe
 D:\Programming\webNET-Hits\bin\Debug\net7.0\webNET-Hits-backend-aspnet-project-1.deps.json
 D:\Programming\webNET-Hits\bin\Debug\net7.0\webNET-Hits-backend-aspnet-project-1.runtimeconfig.json
@@ -85,3 +83,12 @@ D:\Programming\webNET-Hits-backend-aspnet-project-1\bin\Debug\net7.0\Mono.TextTe
 D:\Programming\webNET-Hits-backend-aspnet-project-1\bin\Debug\net7.0\Npgsql.dll
 D:\Programming\webNET-Hits-backend-aspnet-project-1\bin\Debug\net7.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 D:\Programming\webNET-Hits-backend-aspnet-project-1\bin\Debug\net7.0\System.CodeDom.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\Microsoft.IdentityModel.Logging.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll
+D:\Programming\webNET-Hits\bin\Debug\net7.0\appsettings.Development.json
+D:\Programming\webNET-Hits\bin\Debug\net7.0\appsettingss.json

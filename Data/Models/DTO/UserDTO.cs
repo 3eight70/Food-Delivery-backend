@@ -17,7 +17,5 @@ public class UserDTO
     [Required]
     public Guid Address { get; set; }
     [Required]
-    public Rating Rating { get; set; }
-    public Order Order { get; set; }
-    
+    public String Password { get; set; }
 }

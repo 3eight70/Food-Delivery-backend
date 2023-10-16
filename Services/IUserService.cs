@@ -8,4 +8,6 @@ public interface IUserService
     User RegisterUser();
     UserDTO GetUserProfile();
     Task Add(UserDTO model);
+
+    string LoginUser(LoginCredentials userData);
 }

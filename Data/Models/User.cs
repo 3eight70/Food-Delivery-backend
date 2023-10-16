@@ -20,8 +20,7 @@ public class User
     [Required]
     public Guid Address { get; set; }
     [Required]
-    public Rating Rating { get; set; }
-    public Order Order { get; set; }
+    public string Password { get; set; }
 
     public User(Guid id, String fullName, DateTime birthDate, Gender gender, String phone, String email)
     {
