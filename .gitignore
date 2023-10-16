@@ -28,6 +28,7 @@ appsettings.Development.json
 .vs/
 [Bb]in/
 [Oo]bj/
+obj
 _UpgradeReport_Files/
 [Pp]ackages/
 
