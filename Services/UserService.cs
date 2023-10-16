@@ -25,13 +25,13 @@ public class UserService : IUserService
     {
         return _context.Users.Select(user => new UserDTO
         {
+            Id = user.Id,
             FullName = user.FullName,
             BirthDate = user.BirthDate,
             gender = user.gender,
             Phone = user.Phone,
             Email = user.Email,
             Address = user.Address,
-            Password = user.Password
         }).FirstOrDefault();
     }
 
@@ -60,7 +60,7 @@ public class UserService : IUserService
         });
     }
 
-    public async Task RegisterUser(UserDTO model)
+    public async Task RegisterUser(UserRegisterModel model)
     {
         await _context.Users.AddAsync(new User(new Guid(), model.FullName, model.BirthDate, model.gender, model.Phone, model.Email, CreateSHA256(model.Password) ));
         await _context.SaveChangesAsync();
@@ -70,5 +70,10 @@ public class UserService : IUserService
     {
         using SHA256 hash = SHA256.Create();
         return Convert.ToHexString(hash.ComputeHash(Encoding.UTF8.GetBytes(input)));
+    }
+
+    public UserEditModel EditUserProfile(UserEditModel model)
+    {
+        return null;  //Допилить
     }
 }

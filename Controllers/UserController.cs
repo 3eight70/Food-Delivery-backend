@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
@@ -50,11 +51,16 @@ public class UserController: ControllerBase
     
     [HttpPost]
     [Route("register")]
-    public async Task<ActionResult> Post(UserDTO model)
+    public async Task<ActionResult> Post(UserRegisterModel model)
     {
         if (!ModelState.IsValid)
         {
             return StatusCode(401, "User model is invalid.");
+        }
+
+        if (model.Phone != null && !IsValidPhoneNumber(model.Phone))
+        {
+            return StatusCode(400, "Invalid phone number");
         }
 
         try
@@ -69,7 +75,7 @@ public class UserController: ControllerBase
         
     }
     
-    [Authorize]
+   [Authorize]
     [HttpGet]
     [Route("profile")]
     public ActionResult<UserDTO> Get()
@@ -80,8 +86,13 @@ public class UserController: ControllerBase
     [Authorize]
     [HttpPut]
     [Route("profile")]
-    public ActionResult<User> Edit()
+    public ActionResult<UserEditModel> Edit(UserEditModel model)
     {
-        return null;
+        return userService.EditUserProfile(model);
+    }
+    
+    private bool IsValidPhoneNumber(string phoneNumber)
+    {
+        return Regex.IsMatch(phoneNumber, @"^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$");
     }
 }

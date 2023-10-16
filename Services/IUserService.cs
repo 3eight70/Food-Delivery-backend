@@ -6,7 +6,9 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IUserService
 {
     UserDTO GetUserProfile();
-    Task RegisterUser(UserDTO model);
+    Task RegisterUser(UserRegisterModel model);
 
     IResult LoginUser(LoginCredentials userData);
+
+    UserEditModel EditUserProfile(UserEditModel model);
 }
