@@ -31,7 +31,16 @@ public class UserController: ControllerBase
     {
         try
         {
-            return Ok(userService.LoginUser(model));
+            var response = userService.LoginUser(model);
+            if (response == null)
+            {
+                return StatusCode(400, new
+                {
+                    status = "null",
+                    message = "Login failed"
+                });
+            }
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -50,8 +59,8 @@ public class UserController: ControllerBase
 
         try
         {
-            await userService.Add(model);
-            return Ok(userService.RegisterUser());
+            await userService.RegisterUser(model);
+            return Ok();
         }
         catch (Exception ex)
         {
