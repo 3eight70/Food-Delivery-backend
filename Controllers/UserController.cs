@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
@@ -21,9 +22,12 @@ public class UserController: ControllerBase
     [Authorize]
     [HttpPost]
     [Route("logout")]
-    public ActionResult<UserDTO> Logout()
+    public async Task<ActionResult> Logout()
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+        
+        return await userService.LogoutUser(token);
     }
     
     [HttpPost]
@@ -41,7 +45,10 @@ public class UserController: ControllerBase
                     message = "Login failed"
                 });
             }
-            return Ok();
+            return Ok(new
+            {
+                access_token = response
+            });
         }
         catch (Exception ex)
         {
@@ -58,15 +65,13 @@ public class UserController: ControllerBase
             return StatusCode(401, "User model is invalid.");
         }
 
-        if (model.Phone != null && !IsValidPhoneNumber(model.Phone))
-        {
-            return StatusCode(400, "Invalid phone number");
-        }
-
         try
         {
-            await userService.RegisterUser(model);
-            return Ok();
+            return await userService.RegisterUser(model);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
         }
         catch (Exception ex)
         {
@@ -86,13 +91,22 @@ public class UserController: ControllerBase
     [Authorize]
     [HttpPut]
     [Route("profile")]
-    public ActionResult<UserEditModel> Edit(UserEditModel model)
+    public async Task<ActionResult> Edit(UserEditModel model)
     {
-        return userService.EditUserProfile(model);
-    }
-    
-    private bool IsValidPhoneNumber(string phoneNumber)
-    {
-        return Regex.IsMatch(phoneNumber, @"^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$");
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return await userService.EditUserProfile(model, token);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }

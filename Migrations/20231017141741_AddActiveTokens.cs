@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace webNET_Hits_backend_aspnet_project_1.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangesInDataModels : Migration
+    public partial class AddActiveTokens : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,12 +42,19 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
             migrationBuilder.RenameColumn(
                 name: "OrderId",
                 table: "DishesInCart",
-                newName: "UserId");
+                newName: "User");
 
             migrationBuilder.RenameIndex(
                 name: "IX_DishesInCart_OrderId",
                 table: "DishesInCart",
-                newName: "IX_DishesInCart_UserId");
+                newName: "IX_DishesInCart_User");
+
+            migrationBuilder.AddColumn<string>(
+                name: "Password",
+                table: "Users",
+                type: "text",
+                nullable: false,
+                defaultValue: "");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "DishId",
@@ -64,11 +71,25 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.AddColumn<Guid>(
-                name: "DishId",
+                name: "Dish",
                 table: "DishesInCart",
                 type: "uuid",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+
+            migrationBuilder.CreateTable(
+                name: "ActiveTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    userId = table.Column<Guid>(type: "uuid", nullable: false),
+                    token = table.Column<string>(type: "text", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActiveTokens", x => x.Id);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_DishId",
@@ -82,22 +103,22 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DishesInCart_DishId",
+                name: "IX_DishesInCart_Dish",
                 table: "DishesInCart",
-                column: "DishId");
+                column: "Dish");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DishesInCart_Dishes_DishId",
+                name: "FK_DishesInCart_Dishes_Dish",
                 table: "DishesInCart",
-                column: "DishId",
+                column: "Dish",
                 principalTable: "Dishes",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_DishesInCart_Users_UserId",
+                name: "FK_DishesInCart_Users_User",
                 table: "DishesInCart",
-                column: "UserId",
+                column: "User",
                 principalTable: "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -123,11 +144,11 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_DishesInCart_Dishes_DishId",
+                name: "FK_DishesInCart_Dishes_Dish",
                 table: "DishesInCart");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_DishesInCart_Users_UserId",
+                name: "FK_DishesInCart_Users_User",
                 table: "DishesInCart");
 
             migrationBuilder.DropForeignKey(
@@ -138,6 +159,9 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 name: "FK_Ratings_Users_UserId",
                 table: "Ratings");
 
+            migrationBuilder.DropTable(
+                name: "ActiveTokens");
+
             migrationBuilder.DropIndex(
                 name: "IX_Ratings_DishId",
                 table: "Ratings");
@@ -147,8 +171,12 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 table: "Ratings");
 
             migrationBuilder.DropIndex(
-                name: "IX_DishesInCart_DishId",
+                name: "IX_DishesInCart_Dish",
                 table: "DishesInCart");
+
+            migrationBuilder.DropColumn(
+                name: "Password",
+                table: "Users");
 
             migrationBuilder.DropColumn(
                 name: "DishId",
@@ -159,16 +187,16 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 table: "Ratings");
 
             migrationBuilder.DropColumn(
-                name: "DishId",
+                name: "Dish",
                 table: "DishesInCart");
 
             migrationBuilder.RenameColumn(
-                name: "UserId",
+                name: "User",
                 table: "DishesInCart",
                 newName: "OrderId");
 
             migrationBuilder.RenameIndex(
-                name: "IX_DishesInCart_UserId",
+                name: "IX_DishesInCart_User",
                 table: "DishesInCart",
                 newName: "IX_DishesInCart_OrderId");
 

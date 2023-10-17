@@ -8,8 +8,8 @@ public class DishInCart
     [Key]
     public Guid Id { get; set; }
     public int Count { get; set; }
-    [ForeignKey("UserId")]
+    [ForeignKey("User")]
     public User user { get; set; }
-    [ForeignKey("DishId")]
+    [ForeignKey("Dish")]
     public Dish dish { get; set; }
 }
