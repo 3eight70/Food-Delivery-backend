@@ -6,7 +6,7 @@ using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
-public class HomeController : Controller
+public class HomeController : ControllerBase
 {
     private AppDbContext _context;
 

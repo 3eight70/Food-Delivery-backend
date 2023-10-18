@@ -4,7 +4,7 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [ApiController]
 [Route("api/basket")]
-public class BasketController
+public class BasketController: ControllerBase
 {
     [HttpGet]
     public ActionResult Get()         //Доделать ActionResult<>

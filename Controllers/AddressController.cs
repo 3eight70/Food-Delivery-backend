@@ -5,7 +5,7 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [ApiController]
 [Route("api/address")]
-public class AddressController
+public class AddressController: ControllerBase
 {
     [HttpGet]
     [Route("search")]

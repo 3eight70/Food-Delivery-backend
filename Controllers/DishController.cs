@@ -1,16 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using webNET_Hits_backend_aspnet_project_1.Models;
 
 namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [ApiController]
 [Route("api/dish")]
-public class DishController
+public class DishController: ControllerBase
 {
     [HttpGet]
-    public ActionResult<Dish> GetList()
+    public Task<ActionResult> GetList([BindRequired] Category[] categories, bool vegetarian, DishSorting sorting, int page)
     {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            
+        }
         return null;
     }
 
