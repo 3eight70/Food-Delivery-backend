@@ -9,6 +9,8 @@ public class Dish
     [Required]
     public String Name { get; set; }
     [Required]
+    public string Description { get; set; }
+    [Required]
     public int Price { get; set; }
     [Required]
     public String Photo { get; set; }
@@ -17,4 +19,15 @@ public class Dish
     public Rating Rating;
     [Required]
     public Category Category { get; set; }
+
+    public Dish(Guid id, string name, int price, string description, string photo, bool isVegetarian, Category category)
+    {
+        Id = id;
+        Name = name;
+        Price = price;
+        Photo = photo;
+        Description = description;
+        IsVegetarian = isVegetarian;
+        Category = category;
+    }
 }
