@@ -6,7 +6,7 @@ using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
-public class HomeController : ControllerBase
+public class HomeController : Controller
 {
     private AppDbContext _context;
 
@@ -56,11 +56,7 @@ public class HomeController : ControllerBase
         var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         PageInfo pageInfo = new PageInfo(count, page, pageSize);
-        DishPagedListDTO dishPagedList= new DishPagedListDTO
-        {
-            PageInfo = pageInfo,
-            Dishes = items
-        };
+        DishPagedListDTO dishPagedList = new DishPagedListDTO(items, pageInfo);
 
         return dishPagedList;     
     }

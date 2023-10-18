@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using webNET_Hits_backend_aspnet_project_1.Data;
@@ -11,9 +12,11 @@ using webNET_Hits_backend_aspnet_project_1.Data;
 namespace webNET_Hits_backend_aspnet_project_1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231018124820_ChangesInDishes")]
+    partial class ChangesInDishes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,22 +205,14 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
 
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Rating", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DishId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<double>("Value")
                         .HasColumnType("double precision");
 
-                    b.HasKey("UserId", "DishId");
-
-                    b.HasIndex("DishId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("Id");
 
                     b.ToTable("Ratings");
                 });
@@ -249,12 +244,19 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("RatingId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("gender")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FullName");
+
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("RatingId");
 
                     b.ToTable("Users");
                 });
@@ -289,21 +291,6 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Navigation("house");
                 });
 
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Rating", b =>
-                {
-                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Dish", null)
-                        .WithOne("Rating")
-                        .HasForeignKey("webNET_Hits_backend_aspnet_project_1.Models.Rating", "DishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.User", null)
-                        .WithOne("Rating")
-                        .HasForeignKey("webNET_Hits_backend_aspnet_project_1.Models.Rating", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.User", b =>
                 {
                     b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Order", "Order")
@@ -312,19 +299,15 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Rating", "Rating")
+                        .WithMany()
+                        .HasForeignKey("RatingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Order");
-                });
 
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Dish", b =>
-                {
-                    b.Navigation("Rating")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.User", b =>
-                {
-                    b.Navigation("Rating")
-                        .IsRequired();
+                    b.Navigation("Rating");
                 });
 #pragma warning restore 612, 618
         }

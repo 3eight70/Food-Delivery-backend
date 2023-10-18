@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using webNET_Hits_backend_aspnet_project_1.Models;
+using webNET_Hits_backend_aspnet_project_1.Models.DTO;
+using webNET_Hits_backend_aspnet_project_1.Services;
 
 namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
@@ -9,25 +11,48 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 [Route("api/dish")]
 public class DishController: ControllerBase
 {
+    private IDishService dishService;
+
+    public DishController(IDishService _dishService)
+    {
+        dishService = _dishService;
+    }
+    
     [HttpGet]
-    public Task<ActionResult> GetList([BindRequired] Category[] categories, bool vegetarian, DishSorting sorting, int page)
+    public async Task<ActionResult> GetList([FromQuery]Category[] categories, DishSorting sorting, bool vegetarian = false, int page = 1)
     {
         try
         {
-
+            var dishes = await dishService.GetDishes(categories, sorting, vegetarian, page);
+            return Ok(dishes);
         }
         catch (Exception ex)
         {
-            
+            return StatusCode(500, "Something went wrong");
         }
-        return null;
     }
 
     [HttpGet]
     [Route("{id}")]
-    public ActionResult<Dish> GetInfo()
+    public async Task<ActionResult> GetInfo(Guid id)
     {
-        return null;
+        try
+        {
+            var dish = dishService.GetDish(id);
+            return Ok(dish);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, new
+            {
+                status = "error",
+                message = $"Dish with id={ex.Message} doesn't exist in database"
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 
     [HttpGet]
