@@ -157,7 +157,7 @@ public class UserService : IUserService
 
     public async Task AddToken(User user, string token)
     {
-        ActiveToken tkn = new ActiveToken(new Guid(), user, token, DateTime.Now.AddMinutes(30));
+        ActiveToken tkn = new ActiveToken(new Guid(), user, token, DateTime.UtcNow.AddMinutes(30));
         await _context.ActiveTokens.AddAsync(tkn);
         await _context.SaveChangesAsync();
     }
@@ -169,7 +169,7 @@ public class UserService : IUserService
 
     private bool IsValidDate(DateTime date)
     {
-        return date <= DateTime.Now;
+        return date <= DateTime.UtcNow;
     }
 
     private string CreateToken(User user)
