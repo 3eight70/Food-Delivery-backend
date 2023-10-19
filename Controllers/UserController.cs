@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -16,6 +17,7 @@ public class UserController: ControllerBase
         userService = user;
     }
     
+    [Authorize]
     [HttpPost]
     [Route("logout")]
     public ActionResult<UserDTO> Logout()
@@ -25,9 +27,25 @@ public class UserController: ControllerBase
     
     [HttpPost]
     [Route("login")]
-    public ActionResult<UserDTO> Login()
+    public async Task<ActionResult> Login(LoginCredentials model)
     {
-        return null;
+        try
+        {
+            var response = userService.LoginUser(model);
+            if (response == null)
+            {
+                return StatusCode(400, new
+                {
+                    status = "null",
+                    message = "Login failed"
+                });
+            }
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Invalid email or password");
+        }
     }
     
     [HttpPost]
@@ -41,8 +59,8 @@ public class UserController: ControllerBase
 
         try
         {
-            await userService.Add(model);
-            return Ok(userService.RegisterUser());
+            await userService.RegisterUser(model);
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -51,6 +69,7 @@ public class UserController: ControllerBase
         
     }
     
+    [Authorize]
     [HttpGet]
     [Route("profile")]
     public ActionResult<UserDTO> Get()
@@ -58,6 +77,7 @@ public class UserController: ControllerBase
         return userService.GetUserProfile();
     }
 
+    [Authorize]
     [HttpPut]
     [Route("profile")]
     public ActionResult<User> Edit()
