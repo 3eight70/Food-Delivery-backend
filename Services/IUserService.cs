@@ -1,4 +1,5 @@
-﻿using webNET_Hits_backend_aspnet_project_1.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Services;
@@ -6,7 +7,11 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IUserService
 {
     UserDTO GetUserProfile();
-    Task RegisterUser(UserDTO model);
+    Task<ActionResult> RegisterUser(UserRegisterModel model);
 
-    IResult LoginUser(LoginCredentials userData);
+    Task<ActionResult> LogoutUser(string token);
+
+    string LoginUser(LoginCredentials userData);
+
+    Task<ActionResult> EditUserProfile(UserEditModel model, string token);
 }

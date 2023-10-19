@@ -12,8 +12,8 @@ using webNET_Hits_backend_aspnet_project_1.Data;
 namespace webNET_Hits_backend_aspnet_project_1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231016070011_ChangesInDataModels")]
-    partial class ChangesInDataModels
+    [Migration("20231017141741_AddActiveTokens")]
+    partial class AddActiveTokens
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,27 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.ActiveToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActiveTokens");
+                });
 
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.AddressElement", b =>
                 {
@@ -93,17 +114,17 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("DishId")
+                    b.Property<Guid>("Dish")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("User")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DishId");
+                    b.HasIndex("Dish");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User");
 
                     b.ToTable("DishesInCart");
                 });
@@ -249,6 +270,10 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
@@ -267,13 +292,13 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 {
                     b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Dish", "dish")
                         .WithMany()
-                        .HasForeignKey("DishId")
+                        .HasForeignKey("Dish")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.User", "user")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("User")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

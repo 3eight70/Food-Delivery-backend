@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
@@ -20,9 +22,12 @@ public class UserController: ControllerBase
     [Authorize]
     [HttpPost]
     [Route("logout")]
-    public ActionResult<UserDTO> Logout()
+    public async Task<ActionResult> Logout()
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+        
+        return await userService.LogoutUser(token);
     }
     
     [HttpPost]
@@ -40,7 +45,10 @@ public class UserController: ControllerBase
                     message = "Login failed"
                 });
             }
-            return Ok();
+            return Ok(new
+            {
+                access_token = response
+            });
         }
         catch (Exception ex)
         {
@@ -50,7 +58,7 @@ public class UserController: ControllerBase
     
     [HttpPost]
     [Route("register")]
-    public async Task<ActionResult> Post(UserDTO model)
+    public async Task<ActionResult> Post(UserRegisterModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -59,8 +67,11 @@ public class UserController: ControllerBase
 
         try
         {
-            await userService.RegisterUser(model);
-            return Ok();
+            return await userService.RegisterUser(model);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
         }
         catch (Exception ex)
         {
@@ -69,7 +80,7 @@ public class UserController: ControllerBase
         
     }
     
-    [Authorize]
+   [Authorize]
     [HttpGet]
     [Route("profile")]
     public ActionResult<UserDTO> Get()
@@ -80,8 +91,22 @@ public class UserController: ControllerBase
     [Authorize]
     [HttpPut]
     [Route("profile")]
-    public ActionResult<User> Edit()
+    public async Task<ActionResult> Edit(UserEditModel model)
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return await userService.EditUserProfile(model, token);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }
