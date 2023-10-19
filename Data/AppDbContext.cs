@@ -18,6 +18,7 @@ public class AppDbContext: DbContext
     public DbSet<DishInCart> DishesInCart { get; set; }
     public DbSet<AddressElement> AddressElements { get; set; }
     public DbSet<Rating> Ratings { get; set; }
+    public DbSet<ActiveToken> ActiveTokens { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

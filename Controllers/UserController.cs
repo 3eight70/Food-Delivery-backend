@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -16,23 +19,46 @@ public class UserController: ControllerBase
         userService = user;
     }
     
+    [Authorize]
     [HttpPost]
     [Route("logout")]
-    public ActionResult<UserDTO> Logout()
+    public async Task<ActionResult> Logout()
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+        
+        return await userService.LogoutUser(token);
     }
     
     [HttpPost]
     [Route("login")]
-    public ActionResult<UserDTO> Login()
+    public async Task<ActionResult> Login(LoginCredentials model)
     {
-        return null;
+        try
+        {
+            var response = userService.LoginUser(model);
+            if (response == null)
+            {
+                return StatusCode(400, new
+                {
+                    status = "null",
+                    message = "Login failed"
+                });
+            }
+            return Ok(new
+            {
+                access_token = response
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Invalid email or password");
+        }
     }
     
     [HttpPost]
     [Route("register")]
-    public async Task<ActionResult> Post(UserDTO model)
+    public async Task<ActionResult> Post(UserRegisterModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -41,8 +67,11 @@ public class UserController: ControllerBase
 
         try
         {
-            await userService.Add(model);
-            return Ok(userService.RegisterUser());
+            return await userService.RegisterUser(model);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
         }
         catch (Exception ex)
         {
@@ -51,6 +80,7 @@ public class UserController: ControllerBase
         
     }
     
+   [Authorize]
     [HttpGet]
     [Route("profile")]
     public ActionResult<UserDTO> Get()
@@ -58,10 +88,25 @@ public class UserController: ControllerBase
         return userService.GetUserProfile();
     }
 
+    [Authorize]
     [HttpPut]
     [Route("profile")]
-    public ActionResult<User> Edit()
+    public async Task<ActionResult> Edit(UserEditModel model)
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return await userService.EditUserProfile(model, token);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }
