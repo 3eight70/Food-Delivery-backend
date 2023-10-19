@@ -22,6 +22,27 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.ActiveToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActiveTokens");
+                });
+
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.AddressElement", b =>
                 {
                     b.Property<Guid>("Id")
@@ -90,17 +111,17 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("DishId")
+                    b.Property<Guid>("Dish")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("User")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DishId");
+                    b.HasIndex("Dish");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User");
 
                     b.ToTable("DishesInCart");
                 });
@@ -246,6 +267,10 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("text");
@@ -264,13 +289,13 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 {
                     b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Dish", "dish")
                         .WithMany()
-                        .HasForeignKey("DishId")
+                        .HasForeignKey("Dish")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.User", "user")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("User")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
