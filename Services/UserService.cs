@@ -46,7 +46,7 @@ public class UserService : IUserService
         if (user == null) return null;
         else
         {
-            ActiveToken? token = _context.ActiveTokens.FirstOrDefault(token => token.user == user);
+            ActiveToken? token = _context.ActiveTokens.FirstOrDefault(token => token.userId == user.Id);
             if (token != null)
             {
                 if (token.ExpirationDate > DateTime.Now)
@@ -126,7 +126,7 @@ public class UserService : IUserService
 
         if (userToken != null)
         {
-            User? user = _context.Users.FirstOrDefault(us => us == userToken.user);
+            var user = _context.Users.FirstOrDefault(us => us.Id == userToken.userId);
 
             if (user != null)
             {
@@ -157,7 +157,7 @@ public class UserService : IUserService
 
     public async Task AddToken(User user, string token)
     {
-        ActiveToken tkn = new ActiveToken(new Guid(), user, token, DateTime.UtcNow.AddMinutes(30));
+        ActiveToken tkn = new ActiveToken(new Guid(), user.Id, token, DateTime.UtcNow.AddMinutes(30));
         await _context.ActiveTokens.AddAsync(tkn);
         await _context.SaveChangesAsync();
     }

@@ -9,9 +9,9 @@ public class Rating
     public Guid Id { get; set; }
     [Required]
     [ForeignKey("UserId")]
-    public User user { get; set; }
+    public Guid user { get; set; }
     [Required]
     [ForeignKey("DishId")]
-    public Dish dish { get; set; }
+    public Guid dish { get; set; }
     public double Value { get; set; }
 }

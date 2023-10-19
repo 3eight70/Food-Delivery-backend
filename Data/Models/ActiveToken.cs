@@ -7,14 +7,15 @@ public class ActiveToken
 {
     [Key]
     public Guid Id { get; set; }
-    public User user { get; set; }           
+    [ForeignKey("UserId")]
+    public Guid userId { get; set; }           
     [Required]
     public String token { get; set; }
     public DateTime ExpirationDate { get; set; }
-    public ActiveToken(Guid _id, User _user, string _token, DateTime date)
+    public ActiveToken(Guid _id, Guid _userId, string _token, DateTime date)
     {
         Id = _id;
-        user = _user;
+        userId = _userId;
         token = _token;
         ExpirationDate = date;
     }
