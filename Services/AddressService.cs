@@ -53,25 +53,16 @@ public class AddressService: IAddressService
 
         foreach (AsAdmHierarchy el in addressList)
         {
-            var curObject = (from AsAdmHierarchy in _context.AsAdmHierarchies
-                join AsAddrObj in _context.AsAddrObjs on AsAdmHierarchy.Objectid equals AsAddrObj.Objectid
-                select AsAddrObj).FirstOrDefault();
-            addresses.Append(new SearchAddressModel
+            var curObject = _context.AsAddrObjs.FirstOrDefault(obj => obj.Objectid == el.Objectid);
+            addresses.Add(new SearchAddressModel
             {
                 ObjectId = curObject.Objectid,
                 ObjectGuid = curObject.Objectguid,
                 Text = curObject.Typename + " " + curObject.Name,
-                ObjectLevelText = curObject.Level
+                ObjectLevel = AddressObjectLevels(curObject.Level).ObjectLevel,
+                ObjectLevelText = AddressObjectLevels(curObject.Level).ObjectLevelText
             });
         }
-        
-        foreach (SearchAddressModel el in addresses)          //Аналогично функции Search
-        {
-            AddressObjectLevel objLevel = AddressObjectLevels(el.ObjectLevelText);
-            el.ObjectLevel = objLevel.ObjectLevel;
-            el.ObjectLevelText = objLevel.ObjectLevelText;
-        }
-
 
         return addresses.ToArray();
     }
@@ -79,17 +70,23 @@ public class AddressService: IAddressService
     private List<AsAdmHierarchy> GetPath(List<AsAdmHierarchy> addressList, Int64? objectId)
     {
         var currentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == objectId);
-        if (currentObject.Parentobjid == null)
+        if (currentObject == null)
         {
             return addressList;
         }
-
+        addressList.Add(currentObject);
+        
         var parentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == currentObject.Parentobjid);
-        addressList.Append(parentObject);
+        if (parentObject == null)
+        {
+            return addressList;
+        }
+        
         GetPath(addressList, parentObject.Objectid);
 
         return addressList;
     }
+
 
     private AddressObjectLevel AddressObjectLevels(string level)
     {
