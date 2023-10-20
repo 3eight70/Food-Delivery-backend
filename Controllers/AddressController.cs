@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Services;
 
@@ -31,8 +32,19 @@ public class AddressController: ControllerBase
 
     [HttpGet]
     [Route("getaddresschain")]
-    public ActionResult<SearchAddressModel> GetChain()
+    public ActionResult<SearchAddressModel> GetChain(Guid objectGuid)
     {
-        return null;
+        try
+        {
+            return Ok(addressService.SearchAddressChain(objectGuid));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }

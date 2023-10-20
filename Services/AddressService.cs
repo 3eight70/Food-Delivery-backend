@@ -1,4 +1,5 @@
-﻿using webNET_Hits_backend_aspnet_project_1.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using webNET_Hits_backend_aspnet_project_1.Data.Models;
 using webNET_Hits_backend_aspnet_project_1.Models;
 
 namespace webNET_Hits_backend_aspnet_project_1.Services;
@@ -35,6 +36,59 @@ public class AddressService: IAddressService
         }
 
         return addresses;
+    }
+
+    public SearchAddressModel[] SearchAddressChain(Guid objectGuid)
+    {
+        var address = _context.AsAddrObjs.FirstOrDefault(ad => ad.Objectguid == objectGuid);
+        if (address == null)
+        {
+            throw new InvalidOperationException("Invalid objectGuid");
+        }
+        var addressFromHierarchy = _context.AsAdmHierarchies.FirstOrDefault(ad => ad.Objectid == address.Objectid);
+        List<AsAdmHierarchy> addressList = new List<AsAdmHierarchy>();
+        addressList = GetPath(addressList, addressFromHierarchy.Objectid);
+
+        List<SearchAddressModel> addresses = new List<SearchAddressModel>();
+
+        foreach (AsAdmHierarchy el in addressList)
+        {
+            var curObject = (from AsAdmHierarchy in _context.AsAdmHierarchies
+                join AsAddrObj in _context.AsAddrObjs on AsAdmHierarchy.Objectid equals AsAddrObj.Objectid
+                select AsAddrObj).FirstOrDefault();
+            addresses.Append(new SearchAddressModel
+            {
+                ObjectId = curObject.Objectid,
+                ObjectGuid = curObject.Objectguid,
+                Text = curObject.Typename + " " + curObject.Name,
+                ObjectLevelText = curObject.Level
+            });
+        }
+        
+        foreach (SearchAddressModel el in addresses)          //Аналогично функции Search
+        {
+            AddressObjectLevel objLevel = AddressObjectLevels(el.ObjectLevelText);
+            el.ObjectLevel = objLevel.ObjectLevel;
+            el.ObjectLevelText = objLevel.ObjectLevelText;
+        }
+
+
+        return addresses.ToArray();
+    }
+
+    private List<AsAdmHierarchy> GetPath(List<AsAdmHierarchy> addressList, Int64? objectId)
+    {
+        var currentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == objectId);
+        if (currentObject.Parentobjid == null)
+        {
+            return addressList;
+        }
+
+        var parentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == currentObject.Parentobjid);
+        addressList.Append(parentObject);
+        GetPath(addressList, parentObject.Objectid);
+
+        return addressList;
     }
 
     private AddressObjectLevel AddressObjectLevels(string level)

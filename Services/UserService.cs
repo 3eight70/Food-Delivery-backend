@@ -93,7 +93,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("Invalid phone number");
         }
 
-        if (model.BirthDate != null && !IsValidDate(model.BirthDate))
+        if (!IsValidDate(model.BirthDate))
         {
             throw new InvalidOperationException("Invalid Birth Date");
         }
