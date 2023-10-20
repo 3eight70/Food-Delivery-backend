@@ -26,7 +26,7 @@ public class AddressService: IAddressService
                 ObjectGuid = AsAddrObj.Objectguid,
                 Text = AsAddrObj.Typename + " " + AsAddrObj.Name,
                 ObjectLevelText = AsAddrObj.Level
-            }).ToArray();
+            }).Distinct().Take(10).ToArray();
 
         for (int i = 0; i < addresses.Length; i++)          //Костыль для того, чтобы записывать значения, т.к если это делать в select new вылетает error 500
         {
