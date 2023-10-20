@@ -8,6 +8,6 @@ public class SearchAddressModel
     public Int64 ObjectId { get; set; }
     public Guid ObjectGuid { get; set; }
     public String? Text { get; set; }
-    public GarAddressLevel ObjectLevel { get; set; }
+    public GarAddressLevel? ObjectLevel { get; set; }
     public String? ObjectLevelText { get; set; }
 }   
