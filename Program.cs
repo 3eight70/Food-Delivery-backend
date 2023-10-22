@@ -32,8 +32,8 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = config["JwtSettings:Issuer"],
         ValidAudience = config["JwtSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
+        ValidateIssuer = false,
+        ValidateAudience = false,           //Я подумал, что нам не очень нужны на данном проекте проверки
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
@@ -46,6 +46,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IBasketService, BasketService>();
 
 var app = builder.Build();
 
