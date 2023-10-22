@@ -49,7 +49,7 @@ public class UserService : IUserService
             ActiveToken? token = _context.ActiveTokens.FirstOrDefault(token => token.userId == user.Id);
             if (token != null)
             {
-                if (token.ExpirationDate > DateTime.Now)
+                if (token.ExpirationDate < DateTime.Now)
                 {
                     return token.token;
                 }
