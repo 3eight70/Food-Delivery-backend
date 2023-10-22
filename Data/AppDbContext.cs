@@ -23,10 +23,7 @@ public class AppDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<User>(options =>
-        {
-            options.HasIndex(x => x.FullName);
-        });
+        modelBuilder.Entity<Rating>().HasKey(r => new { r.UserId, r.DishId });
         
         base.OnModelCreating(modelBuilder);
     }
