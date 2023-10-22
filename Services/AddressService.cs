@@ -15,57 +15,123 @@ public class AddressService: IAddressService
 
     public SearchAddressModel[] Search(Int64 parentObjectId, string? query)
     {
-        
-        var addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
-            join AsAddrObj in _context.AsAddrObjs on AsAdmHierarchy.Objectid equals AsAddrObj.Objectid
-            where AsAdmHierarchy.Parentobjid == parentObjectId && (AsAddrObj.Name.Contains(query) || string.IsNullOrEmpty(query))
-            
+        List<SearchAddressModel> addresses = new List<SearchAddressModel>();
+        if (query == null){
+        addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
+            where AsAdmHierarchy.Parentobjid == parentObjectId
+            from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid).DefaultIfEmpty()
+            from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid).DefaultIfEmpty()
+            where (AsAddrObj != null && (AsAddrObj.Name.Contains(query)) ||
+                   (AsHouse != null && AsHouse.Housenum.Contains(query)) || string.IsNullOrEmpty(query))
+
             select new SearchAddressModel
             {
-                ObjectId = AsAddrObj.Objectid,
-                ObjectGuid = AsAddrObj.Objectguid,
-                Text = AsAddrObj.Typename + " " + AsAddrObj.Name,
-                ObjectLevelText = AsAddrObj.Level
-            }).Distinct().Take(10).ToArray();
-
-        for (int i = 0; i < addresses.Length; i++)          //Костыль для того, чтобы записывать значения, т.к если это делать в select new вылетает error 500
+                ObjectId = AsAddrObj != null ? AsAddrObj.Objectid : AsHouse.Objectid,
+                ObjectGuid = AsAddrObj != null ? AsAddrObj.Objectguid : AsHouse.Objectguid,
+                Text = AsAddrObj != null ? AsAddrObj.Typename + " " + AsAddrObj.Name : AsHouse.Housenum,
+                ObjectLevelText = AsAddrObj != null ? AsAddrObj.Level : null
+            }).Distinct().Take(10).ToList();
+        }
+        else
         {
-            AddressObjectLevel objLevel = AddressObjectLevels(addresses[i].ObjectLevelText);
-            addresses[i].ObjectLevel = objLevel.ObjectLevel;
-            addresses[i].ObjectLevelText = objLevel.ObjectLevelText;
+            addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
+                where AsAdmHierarchy.Parentobjid == parentObjectId
+                from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid).DefaultIfEmpty()
+                from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid).DefaultIfEmpty()
+                where (AsAddrObj != null && (AsAddrObj.Name.Contains(query)) ||
+                       (AsHouse != null && AsHouse.Housenum.Contains(query)) || string.IsNullOrEmpty(query))
+
+                select new SearchAddressModel
+                {
+                    ObjectId = AsAddrObj != null ? AsAddrObj.Objectid : AsHouse.Objectid,
+                    ObjectGuid = AsAddrObj != null ? AsAddrObj.Objectguid : AsHouse.Objectguid,
+                    Text = AsAddrObj != null ? AsAddrObj.Typename + " " + AsAddrObj.Name : AsHouse.Housenum,
+                    ObjectLevelText = AsAddrObj != null ? AsAddrObj.Level : null
+                }).Distinct().ToList();
         }
 
-        return addresses;
-    }
-
-    public SearchAddressModel[] SearchAddressChain(Guid objectGuid)
-    {
-        var address = _context.AsAddrObjs.FirstOrDefault(ad => ad.Objectguid == objectGuid);
-        if (address == null)
+        foreach (SearchAddressModel el in addresses)
         {
-            throw new InvalidOperationException("Invalid objectGuid");
-        }
-        var addressFromHierarchy = _context.AsAdmHierarchies.FirstOrDefault(ad => ad.Objectid == address.Objectid);
-        List<AsAdmHierarchy> addressList = new List<AsAdmHierarchy>();
-        addressList = GetPath(addressList, addressFromHierarchy.Objectid);
-
-        List<SearchAddressModel> addresses = new List<SearchAddressModel>();
-
-        foreach (AsAdmHierarchy el in addressList)
-        {
-            var curObject = _context.AsAddrObjs.FirstOrDefault(obj => obj.Objectid == el.Objectid);
-            addresses.Add(new SearchAddressModel
-            {
-                ObjectId = curObject.Objectid,
-                ObjectGuid = curObject.Objectguid,
-                Text = curObject.Typename + " " + curObject.Name,
-                ObjectLevel = AddressObjectLevels(curObject.Level).ObjectLevel,
-                ObjectLevelText = AddressObjectLevels(curObject.Level).ObjectLevelText
-            });
+            AddressObjectLevel objLevel = AddressObjectLevels(el.ObjectLevelText);
+            el.ObjectLevel = objLevel.ObjectLevel;
+            el.ObjectLevelText = objLevel.ObjectLevelText;
         }
 
         return addresses.ToArray();
     }
+
+
+   public SearchAddressModel[] SearchAddressChain(Guid objectGuid)
+{
+    var address = _context.AsAddrObjs.FirstOrDefault(ad => ad.Objectguid == objectGuid);
+    var houseAddress = _context.AsHouses.FirstOrDefault(house => house.Objectguid == objectGuid);
+
+    if (address == null && houseAddress == null)
+    {
+        throw new InvalidOperationException("Invalid objectGuid");
+    }
+
+    AsAdmHierarchy? addressFromHierarchy = null;
+    AsHouse? houseFromHouses = null;
+
+    if (address != null)
+    {
+        addressFromHierarchy = _context.AsAdmHierarchies.FirstOrDefault(ad => ad.Objectid == address.Objectid);
+    }
+    else if (houseAddress != null)
+    {
+        houseFromHouses = _context.AsHouses.FirstOrDefault(house => house.Objectid == houseAddress.Objectid);
+    }
+
+    if (addressFromHierarchy == null && houseFromHouses == null)
+    {
+        throw new InvalidOperationException("Invalid objectGuid");
+    }
+
+    List<AsAdmHierarchy> addressList = new List<AsAdmHierarchy>();
+
+    if (houseFromHouses == null && addressFromHierarchy != null)
+    {
+        addressList = GetPath(addressList, addressFromHierarchy.Objectid);
+    }
+    else if (addressFromHierarchy == null && houseFromHouses != null)
+    {
+        addressList = GetPath(addressList, houseFromHouses.Objectid);
+    }
+
+    List<SearchAddressModel> addresses = new List<SearchAddressModel>();
+
+    foreach (AsAdmHierarchy el in addressList)
+    {
+        var curAddrObject = _context.AsAddrObjs.FirstOrDefault(obj => obj.Objectid == el.Objectid);
+        var curHouseObject = _context.AsHouses.FirstOrDefault(house => house.Objectid == el.Objectid);
+        if (curAddrObject != null)
+        {
+            addresses.Add(new SearchAddressModel
+            {
+                ObjectId = curAddrObject.Objectid,
+                ObjectGuid = curAddrObject.Objectguid,
+                Text = curAddrObject.Typename + " " + curAddrObject.Name,
+                ObjectLevel = AddressObjectLevels(curAddrObject.Level).ObjectLevel,
+                ObjectLevelText = AddressObjectLevels(curAddrObject.Level).ObjectLevelText
+            });
+        }
+        else if (curHouseObject != null)
+        {
+            addresses.Add(new SearchAddressModel
+            {
+                ObjectId = curHouseObject.Objectid,
+                ObjectGuid = curHouseObject.Objectguid,
+                Text = curHouseObject.Housenum,
+                ObjectLevel = AddressObjectLevels(null).ObjectLevel,
+                ObjectLevelText = AddressObjectLevels(null).ObjectLevelText
+            });
+        }
+    }
+
+    return addresses.ToArray();
+}
+
 
     private List<AsAdmHierarchy> GetPath(List<AsAdmHierarchy> addressList, Int64? objectId)
     {
