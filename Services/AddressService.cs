@@ -15,28 +15,51 @@ public class AddressService: IAddressService
 
     public SearchAddressModel[] Search(Int64 parentObjectId, string? query)
     {
-        
-        var addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
-            join AsAddrObj in _context.AsAddrObjs on AsAdmHierarchy.Objectid equals AsAddrObj.Objectid
-            where AsAdmHierarchy.Parentobjid == parentObjectId && (AsAddrObj.Name.Contains(query) || string.IsNullOrEmpty(query))
-            
+        List<SearchAddressModel> addresses = new List<SearchAddressModel>();
+        if (query == null){
+        addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
+            where AsAdmHierarchy.Parentobjid == parentObjectId
+            from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid).DefaultIfEmpty()
+            from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid).DefaultIfEmpty()
+            where (AsAddrObj != null && (AsAddrObj.Name.Contains(query)) ||
+                   (AsHouse != null && AsHouse.Housenum.Contains(query)) || string.IsNullOrEmpty(query))
+
             select new SearchAddressModel
             {
-                ObjectId = AsAddrObj.Objectid,
-                ObjectGuid = AsAddrObj.Objectguid,
-                Text = AsAddrObj.Typename + " " + AsAddrObj.Name,
-                ObjectLevelText = AsAddrObj.Level
-            }).Distinct().Take(10).ToArray();
-
-        for (int i = 0; i < addresses.Length; i++)          //Костыль для того, чтобы записывать значения, т.к если это делать в select new вылетает error 500
+                ObjectId = AsAddrObj != null ? AsAddrObj.Objectid : AsHouse.Objectid,
+                ObjectGuid = AsAddrObj != null ? AsAddrObj.Objectguid : AsHouse.Objectguid,
+                Text = AsAddrObj != null ? AsAddrObj.Typename + " " + AsAddrObj.Name : AsHouse.Housenum,
+                ObjectLevelText = AsAddrObj != null ? AsAddrObj.Level : null
+            }).Distinct().Take(10).ToList();
+        }
+        else
         {
-            AddressObjectLevel objLevel = AddressObjectLevels(addresses[i].ObjectLevelText);
-            addresses[i].ObjectLevel = objLevel.ObjectLevel;
-            addresses[i].ObjectLevelText = objLevel.ObjectLevelText;
+            addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
+                where AsAdmHierarchy.Parentobjid == parentObjectId
+                from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid).DefaultIfEmpty()
+                from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid).DefaultIfEmpty()
+                where (AsAddrObj != null && (AsAddrObj.Name.Contains(query)) ||
+                       (AsHouse != null && AsHouse.Housenum.Contains(query)) || string.IsNullOrEmpty(query))
+
+                select new SearchAddressModel
+                {
+                    ObjectId = AsAddrObj != null ? AsAddrObj.Objectid : AsHouse.Objectid,
+                    ObjectGuid = AsAddrObj != null ? AsAddrObj.Objectguid : AsHouse.Objectguid,
+                    Text = AsAddrObj != null ? AsAddrObj.Typename + " " + AsAddrObj.Name : AsHouse.Housenum,
+                    ObjectLevelText = AsAddrObj != null ? AsAddrObj.Level : null
+                }).Distinct().ToList();
         }
 
-        return addresses;
+        foreach (SearchAddressModel el in addresses)
+        {
+            AddressObjectLevel objLevel = AddressObjectLevels(el.ObjectLevelText);
+            el.ObjectLevel = objLevel.ObjectLevel;
+            el.ObjectLevelText = objLevel.ObjectLevelText;
+        }
+
+        return addresses.ToArray();
     }
+
 
     public SearchAddressModel[] SearchAddressChain(Guid objectGuid)
     {
