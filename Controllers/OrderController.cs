@@ -26,15 +26,22 @@ public class OrderController: ControllerBase
         token = token.Substring("Bearer ".Length);
         return null;
     }
-    
+
     [Authorize]
     [HttpGet]
-    public ActionResult<OrderDTO> GetOrders()
+    public ActionResult<OrderInfoDTO[]> GetOrders()
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
-        
-        return null;
+
+        try
+        {
+            return _orderService.GetList(token);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 
     [Authorize]
