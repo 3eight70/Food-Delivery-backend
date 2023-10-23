@@ -7,9 +7,9 @@ public class DishInCart
 {
     [Key]
     public Guid Id { get; set; }
-    public int Count { get; set; }
-    [ForeignKey("User")]
-    public User user { get; set; }
-    [ForeignKey("Dish")]
-    public Dish dish { get; set; }
+    public int Amount { get; set; }
+    [ForeignKey("UserId")]
+    public Guid userId { get; set; }
+    [ForeignKey("DishId")]
+    public Guid dishId { get; set; }
 }

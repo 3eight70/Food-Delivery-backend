@@ -19,8 +19,8 @@ public class AddressService: IAddressService
         if (query == null){
         addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
             where AsAdmHierarchy.Parentobjid == parentObjectId
-            from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid).DefaultIfEmpty()
-            from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid).DefaultIfEmpty()
+            from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid && house.Isactual == 1 && house.Isactive == 1).DefaultIfEmpty()
+            from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid && obj.Isactual == 1 && obj.Isactive == 1).DefaultIfEmpty()
             where (AsAddrObj != null && (AsAddrObj.Name.Contains(query)) ||
                    (AsHouse != null && AsHouse.Housenum.Contains(query)) || string.IsNullOrEmpty(query))
 
@@ -36,8 +36,8 @@ public class AddressService: IAddressService
         {
             addresses = (from AsAdmHierarchy in _context.AsAdmHierarchies
                 where AsAdmHierarchy.Parentobjid == parentObjectId
-                from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid).DefaultIfEmpty()
-                from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid).DefaultIfEmpty()
+                from AsHouse in _context.AsHouses.Where(house => AsAdmHierarchy.Objectid == house.Objectid && house.Isactual == 1 && house.Isactive == 1).DefaultIfEmpty()
+                from AsAddrObj in _context.AsAddrObjs.Where(obj => AsAdmHierarchy.Objectid == obj.Objectid && obj.Isactual == 1 && obj.Isactive == 1).DefaultIfEmpty()
                 where (AsAddrObj != null && (AsAddrObj.Name.Contains(query)) ||
                        (AsHouse != null && AsHouse.Housenum.Contains(query)) || string.IsNullOrEmpty(query))
 
@@ -63,8 +63,8 @@ public class AddressService: IAddressService
 
    public SearchAddressModel[] SearchAddressChain(Guid objectGuid)
 {
-    var address = _context.AsAddrObjs.FirstOrDefault(ad => ad.Objectguid == objectGuid);
-    var houseAddress = _context.AsHouses.FirstOrDefault(house => house.Objectguid == objectGuid);
+    var address = _context.AsAddrObjs.FirstOrDefault(ad => ad.Objectguid == objectGuid && ad.Isactual == 1 && ad.Isactive == 1);
+    var houseAddress = _context.AsHouses.FirstOrDefault(house => house.Objectguid == objectGuid && house.Isactual == 1 && house.Isactive == 1);
 
     if (address == null && houseAddress == null)
     {
@@ -80,7 +80,7 @@ public class AddressService: IAddressService
     }
     else if (houseAddress != null)
     {
-        houseFromHouses = _context.AsHouses.FirstOrDefault(house => house.Objectid == houseAddress.Objectid);
+        houseFromHouses = _context.AsHouses.FirstOrDefault(house => house.Objectid == houseAddress.Objectid && house.Isactual == 1 && house.Isactive == 1);
     }
 
     if (addressFromHierarchy == null && houseFromHouses == null)
@@ -103,8 +103,8 @@ public class AddressService: IAddressService
 
     foreach (AsAdmHierarchy el in addressList)
     {
-        var curAddrObject = _context.AsAddrObjs.FirstOrDefault(obj => obj.Objectid == el.Objectid);
-        var curHouseObject = _context.AsHouses.FirstOrDefault(house => house.Objectid == el.Objectid);
+        var curAddrObject = _context.AsAddrObjs.FirstOrDefault(obj => obj.Objectid == el.Objectid && obj.Isactual == 1 && obj.Isactive == 1);
+        var curHouseObject = _context.AsHouses.FirstOrDefault(house => house.Objectid == el.Objectid && house.Isactual == 1 && house.Isactive == 1);
         if (curAddrObject != null)
         {
             addresses.Add(new SearchAddressModel
@@ -135,14 +135,14 @@ public class AddressService: IAddressService
 
     private List<AsAdmHierarchy> GetPath(List<AsAdmHierarchy> addressList, Int64? objectId)
     {
-        var currentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == objectId);
+        var currentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == objectId && obj.Isactive == 1);
         if (currentObject == null)
         {
             return addressList;
         }
         addressList.Add(currentObject);
         
-        var parentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == currentObject.Parentobjid);
+        var parentObject = _context.AsAdmHierarchies.FirstOrDefault(obj => obj.Objectid == currentObject.Parentobjid && obj.Isactive == 1);
         if (parentObject == null)
         {
             return addressList;

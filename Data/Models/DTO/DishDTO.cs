@@ -9,10 +9,12 @@ public class DishDTO
     [Required]
     public int Price { get; set; }
     [Required]
+    public string Description { get; set; }
+    [Required]
     public String Photo { get; set; }
     [Required]
     public bool IsVegetarian { get; set; }
-    public Rating Rating;
+    public double? Rating { get; set; }
     [Required]
     public Category Category { get; set; }
 }

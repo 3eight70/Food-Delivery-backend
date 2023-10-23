@@ -56,11 +56,7 @@ public class HomeController : Controller
         var items = await source.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         PageInfo pageInfo = new PageInfo(count, page, pageSize);
-        DishPagedListDTO dishPagedList= new DishPagedListDTO
-        {
-            PageInfo = pageInfo,
-            Dishes = items
-        };
+        DishPagedListDTO dishPagedList = new DishPagedListDTO(items, pageInfo);
 
         return dishPagedList;     
     }

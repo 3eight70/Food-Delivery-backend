@@ -6,7 +6,7 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [Route("api/order")]
 [ApiController]
-public class OrderController
+public class OrderController: ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
