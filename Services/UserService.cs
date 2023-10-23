@@ -16,12 +16,15 @@ public class UserService : IUserService
 {
     private readonly AppDbContext _context;
 
+    private readonly GarContext _garContext;
+
     private readonly IConfiguration _configuration;
 
-    public UserService(AppDbContext context, IConfiguration configuration)
+    public UserService(AppDbContext context, IConfiguration configuration, GarContext garContext)
     {
         _context = context;
         _configuration = configuration;
+        _garContext = garContext;
     }
 
     public UserDTO GetUserProfile()
@@ -44,17 +47,8 @@ public class UserService : IUserService
             _context.Users.FirstOrDefault(us => us.Email == userData.Email && us.Password == CreateSHA256(userData.Password));
 
         if (user == null) return null;
-        else
-        {
-            ActiveToken? token = _context.ActiveTokens.FirstOrDefault(token => token.userId == user.Id);
-            if (token != null)
-            {
-                if (token.ExpirationDate > DateTime.UtcNow)
-                {
-                    return token.token;
-                }
-            }
-        }
+
+        ActiveToken? token = _context.ActiveTokens.FirstOrDefault(token => token.userId == user.Id);
 
         var encodedJWT = CreateToken(user);
 
@@ -80,6 +74,13 @@ public class UserService : IUserService
         User? user =
             _context.Users.FirstOrDefault(us => us.Email == model.Email);
 
+        AsAddrObj? address = _garContext.AsAddrObjs.FirstOrDefault(obj => obj.Objectguid == model.Address);
+
+        if (address != null)
+        {
+            throw new InvalidOperationException("Address must be a house");
+        }
+
         if (user != null)
         {
             if (user.Email == model.Email)
@@ -98,8 +99,15 @@ public class UserService : IUserService
             throw new InvalidOperationException("Invalid Birth Date");
         }
 
+        AsHouse? house = _garContext.AsHouses.FirstOrDefault(h => h.Objectguid == model.Address);
+
         user = new User(new Guid(), model.FullName, model.BirthDate, model.gender, model.Phone, model.Email,
             CreateSHA256(model.Password));
+
+        if (house != null)
+        {
+            user.Address = house.Objectguid;
+        }
 
         var encodedJWT = CreateToken(user);
         
@@ -160,7 +168,8 @@ public class UserService : IUserService
         ActiveToken? tkn = _context.ActiveTokens.FirstOrDefault(t => t.userId == user.Id);
         if (tkn != null)
         {
-            tkn.ExpirationDate = DateTime.UtcNow;
+            tkn.ExpirationDate = DateTime.UtcNow.AddMinutes(30);
+            tkn.token = token;
         }
         else
         {

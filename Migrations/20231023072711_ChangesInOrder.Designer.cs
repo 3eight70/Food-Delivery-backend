@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using webNET_Hits_backend_aspnet_project_1.Data;
@@ -11,9 +12,11 @@ using webNET_Hits_backend_aspnet_project_1.Data;
 namespace webNET_Hits_backend_aspnet_project_1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231023072711_ChangesInOrder")]
+    partial class ChangesInOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,38 +44,6 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ActiveTokens");
-                });
-
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.DTO.DishBasketDTO", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("TotalPrice")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("DishBasketDTO");
                 });
 
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Dish", b =>
@@ -142,8 +113,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Property<DateTime>("OrderTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("double precision");
+                    b.Property<int>("Price")
+                        .HasColumnType("integer");
 
                     b.Property<int>("status")
                         .HasColumnType("integer");
@@ -212,18 +183,6 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.DTO.DishBasketDTO", b =>
-                {
-                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Order", null)
-                        .WithMany("DishesInCart")
-                        .HasForeignKey("OrderId");
-                });
-
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Order", b =>
-                {
-                    b.Navigation("DishesInCart");
                 });
 #pragma warning restore 612, 618
         }
