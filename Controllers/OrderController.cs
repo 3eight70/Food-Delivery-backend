@@ -20,11 +20,23 @@ public class OrderController: ControllerBase
     [Authorize]
     [HttpGet]
     [Route("{id}")]
-    public ActionResult<OrderDTO> GetInfo()
+    public ActionResult<OrderDTO> GetInfo(Guid id)
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
-        return null;
+
+        try
+        {
+            return _orderService.GetInfo(token, id);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 
     [Authorize]
@@ -72,10 +84,22 @@ public class OrderController: ControllerBase
     [Authorize]
     [HttpPost]
     [Route("{id}/status")]
-    public ActionResult<OrderDTO> Confirm()
+    public async Task<ActionResult> Confirm(Guid id)
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
-        return null;
+
+        try
+        {
+            return await _orderService.ConfirmOrder(token, id);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }

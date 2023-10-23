@@ -11,6 +11,6 @@ public class OrderDTO
     [Required]
     public Status status { get; set; }
     [Required]
-    public int Price { get; set; }
-    public List<DishInCart> DishesInCart { get; set; }
+    public double Price { get; set; }
+    public List<DishBasketDTO> DishesInCart { get; set; }
 }

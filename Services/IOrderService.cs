@@ -7,4 +7,6 @@ public interface IOrderService
 {
     OrderInfoDTO[] GetList(string token);
     Task<ActionResult> CreateOrder(OrderCreateDTO order, string token);
+    OrderDTO GetInfo(string token, Guid id);
+    Task<ActionResult> ConfirmOrder(string token, Guid id);
 }

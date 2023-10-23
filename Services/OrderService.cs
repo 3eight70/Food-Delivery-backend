@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_1.Data;
 using webNET_Hits_backend_aspnet_project_1.Models;
@@ -66,6 +67,9 @@ public class OrderService: IOrderService
             throw new InvalidDataException("Not found object with ObjectGuid=" + order.AddressId);
         }
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+
+        if (userToken == null) return null;
+        
         var dishesInCart = _basketService.GetCart(token).ToList();
         
         if (dishesInCart.IsNullOrEmpty())
@@ -104,6 +108,48 @@ public class OrderService: IOrderService
         return new OkObjectResult(new
         {
             message = "Order successfully created"
+        });
+    }
+
+    public OrderDTO GetInfo(string token, Guid id)
+    {
+        ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => token == tkn.token);
+
+        Order? order = _context.Orders.Include(ord => ord.DishesInCart).FirstOrDefault(ord => ord.Id == id);
+        
+        if (order == null)
+        {
+            throw new InvalidOperationException("Order with current id doesn't exist");
+        }
+
+        return new OrderDTO
+        {
+            DeliveryTime = order.DeliveryTime,
+            OrderTime = order.OrderTime,
+            status = order.status,
+            Price = order.Price,
+            DishesInCart = order.DishesInCart
+        };
+    }
+
+    public async Task<ActionResult> ConfirmOrder(string token, Guid id)
+    {
+        ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+
+        Order? order = _context.Orders.FirstOrDefault(ord => ord.Id == id && ord.userId == userToken.userId);
+
+        if (order == null)
+        {
+            throw new InvalidOperationException("Order with this id doesn't exist");
+        }
+
+        order.status = Status.Delivered;
+
+        await _context.SaveChangesAsync();
+
+        return new OkObjectResult(new
+        {
+            message = "Order confirmed"
         });
     }
 }

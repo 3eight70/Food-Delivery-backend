@@ -33,7 +33,6 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DishBasketDTO", x => x.Id);
                     table.ForeignKey(
                         name: "FK_DishBasketDTO_Orders_OrderId",
                         column: x => x.OrderId,
