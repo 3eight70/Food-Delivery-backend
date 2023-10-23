@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace webNET_Hits_backend_aspnet_project_1.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangesInOrder : Migration
+    public partial class ChangeDishBasket : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<Guid>(
-                name: "userId",
-                table: "Orders",
+                name: "dishId",
+                table: "DishBasketDTO",
                 type: "uuid",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
@@ -23,8 +23,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "userId",
-                table: "Orders");
+                name: "dishId",
+                table: "DishBasketDTO");
         }
     }
 }
