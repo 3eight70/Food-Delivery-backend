@@ -62,10 +62,6 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsVegetarian")
                         .HasColumnType("boolean");
 
@@ -202,22 +198,14 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
 
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Rating", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("DishId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<double>("Value")
                         .HasColumnType("double precision");
 
-                    b.HasKey("UserId", "DishId");
-
-                    b.HasIndex("DishId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasKey("Id");
 
                     b.ToTable("Ratings");
                 });
@@ -249,12 +237,19 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("RatingId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("gender")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FullName");
+
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("RatingId");
 
                     b.ToTable("Users");
                 });
@@ -289,21 +284,6 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Navigation("house");
                 });
 
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Rating", b =>
-                {
-                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Dish", null)
-                        .WithOne("Rating")
-                        .HasForeignKey("webNET_Hits_backend_aspnet_project_1.Models.Rating", "DishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.User", null)
-                        .WithOne("Rating")
-                        .HasForeignKey("webNET_Hits_backend_aspnet_project_1.Models.Rating", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.User", b =>
                 {
                     b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Order", "Order")
@@ -312,19 +292,15 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("webNET_Hits_backend_aspnet_project_1.Models.Rating", "Rating")
+                        .WithMany()
+                        .HasForeignKey("RatingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Order");
-                });
 
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Dish", b =>
-                {
-                    b.Navigation("Rating")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.User", b =>
-                {
-                    b.Navigation("Rating")
-                        .IsRequired();
+                    b.Navigation("Rating");
                 });
 #pragma warning restore 612, 618
         }

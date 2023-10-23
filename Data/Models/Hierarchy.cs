@@ -11,5 +11,5 @@ public class Hierarchy
     public int ParentObjId { get; set; }
     public bool IsActive { get; set; }
     public House house { get; set; }
-    public AddressElement addressElement { get; set; }
+    public SearchAddressModel SearchAddressModel { get; set; }
 }

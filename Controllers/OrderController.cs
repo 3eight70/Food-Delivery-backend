@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
+using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
@@ -9,25 +10,25 @@ public class OrderController: ControllerBase
 {
     [HttpGet]
     [Route("{id}")]
-    public ActionResult<Order> GetInfo()
+    public ActionResult<OrderDTO> GetInfo()
     {
         return null;
     }
     [HttpGet]
-    public ActionResult<Order> GetOrders()
+    public ActionResult<OrderDTO> GetOrders()
     {
         return null;
     }
 
     [HttpPost]
-    public ActionResult<Order> CreateOrder()
+    public ActionResult<OrderDTO> CreateOrder()
     {
         return null;
     }
 
     [HttpPost]
     [Route("{id}/status")]
-    public ActionResult<Order> Confirm()
+    public ActionResult<OrderDTO> Confirm()
     {
         return null;
     }

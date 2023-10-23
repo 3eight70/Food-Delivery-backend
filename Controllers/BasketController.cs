@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Services;
 
 namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
@@ -6,19 +9,46 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 [Route("api/basket")]
 public class BasketController: ControllerBase
 {
-    [HttpGet]
-    public ActionResult Get()         //Доделать ActionResult<>
+    private readonly IBasketService _basketService;
+
+    public BasketController(IBasketService basketService)
     {
-        return null;
+        _basketService = basketService;
+    }
+    
+    [Authorize]
+    [HttpGet]
+    public ActionResult Get()         
+    {
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+        
+        return Ok(_basketService.GetCart(token));
     }
 
+    [Authorize]
     [HttpPost]
     [Route("dish/{dishId}")]
-    public ActionResult AddDish()
+    public ActionResult AddDish(Guid dishId)
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return Ok(_basketService.AddDish(token, dishId));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 
+    [Authorize]
     [HttpDelete]
     [Route("dish/{dishId}")]
     public ActionResult Decrease()
