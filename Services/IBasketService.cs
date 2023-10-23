@@ -7,4 +7,5 @@ public interface IBasketService
 {
     DishBasketDTO[] GetCart(string token);
     Task<ActionResult> AddDish(string token, Guid dishId);
+    Task<ActionResult> DecreaseDish(string token, Guid dishId, bool increase = false);
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace webNET_Hits_backend_aspnet_project_1.Models;
 
@@ -16,7 +17,7 @@ public class Dish
     public String Photo { get; set; }
     [Required]
     public bool IsVegetarian { get; set; }
-    public Rating? Rating { get; set; }
+    public double? Rating { get; set; }
     [Required]
     public Category Category { get; set; }
 

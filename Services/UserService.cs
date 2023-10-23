@@ -49,7 +49,7 @@ public class UserService : IUserService
             ActiveToken? token = _context.ActiveTokens.FirstOrDefault(token => token.userId == user.Id);
             if (token != null)
             {
-                if (token.ExpirationDate < DateTime.Now)
+                if (token.ExpirationDate > DateTime.UtcNow)
                 {
                     return token.token;
                 }
@@ -157,8 +157,16 @@ public class UserService : IUserService
 
     public async Task AddToken(User user, string token)
     {
-        ActiveToken tkn = new ActiveToken(new Guid(), user.Id, token, DateTime.UtcNow.AddMinutes(30));
-        await _context.ActiveTokens.AddAsync(tkn);
+        ActiveToken? tkn = _context.ActiveTokens.FirstOrDefault(t => t.userId == user.Id);
+        if (tkn != null)
+        {
+            tkn.ExpirationDate = DateTime.UtcNow;
+        }
+        else
+        {
+            tkn = new ActiveToken(new Guid(), user.Id, token, DateTime.UtcNow.AddMinutes(30));
+            await _context.ActiveTokens.AddAsync(tkn);
+        }
         await _context.SaveChangesAsync();
     }
     

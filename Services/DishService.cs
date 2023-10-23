@@ -46,7 +46,7 @@ public class DishService: IDishService
         }
         else if (sorting == DishSorting.RatingAsc)
         {
-            dishes = dishes.OrderBy(dish => dish.Rating.Value);
+            dishes = dishes.OrderBy(dish => dish.Rating);
         }
 
         var dishList = await dishes.ToListAsync();

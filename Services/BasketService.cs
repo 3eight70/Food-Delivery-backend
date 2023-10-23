@@ -18,24 +18,24 @@ public class BasketService: IBasketService
     {
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(id => token == id.token);
 
-        var dishes = (from user in _context.Users
-                where user.Id == userToken.userId
-                from DishesInCart in _context.DishesInCart.Where(dish => dish.userId == user.Id)
-                from Dishes in _context.Dishes.Where(dish => DishesInCart.dishId == dish.Id)
-                where (user != null && DishesInCart != null)
-                group Dishes by Dishes.Id into dishGroup
-                select new DishBasketDTO
-                {
-                    Id = dishGroup.First().Id,
-                    Name = dishGroup.First().Name,
-                    Price = dishGroup.First().Price,
-                    TotalPrice = dishGroup.Sum(dish => dish.Price * _context.DishesInCart.Count(dsh => dsh.dishId == dish.Id)),
-                    Amount = _context.DishesInCart.Count(dish => dish.Id == dishGroup.Key),
-                    Image = dishGroup.First().Photo
-                }
-            ).AsEnumerable().ToArray();
+        var dishes = _context.DishesInCart.Where(cart => cart.userId == userToken.userId).ToList();
+        List<DishBasketDTO> dishesInCart = new List<DishBasketDTO>();
+
+        foreach (DishInCart dish in dishes)
+        {
+            var currentDish = _context.Dishes.FirstOrDefault(dsh => dsh.Id == dish.dishId);
+            dishesInCart.Add(new DishBasketDTO
+            {
+                Amount = dish.Amount,
+                Id = dish.dishId,
+                Image = currentDish.Photo,
+                Name = currentDish.Name,
+                Price = currentDish.Price,
+                TotalPrice = dish.Amount * currentDish.Price
+            });
+        }
         
-        return dishes;
+        return dishesInCart.ToArray();
     }
 
     public async Task<ActionResult> AddDish(string token, Guid dishId)
@@ -49,19 +49,64 @@ public class BasketService: IBasketService
 
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
         User user = _context.Users.FirstOrDefault(usr => usr.Id == userToken.userId);
-
-        await _context.DishesInCart.AddAsync(new DishInCart
+        DishInCart? dishInCart = _context.DishesInCart.FirstOrDefault(dsh => dsh.dishId == dishId);
+        if (dishInCart != null)
         {
-            Id = new Guid(),
-            Amount = 1,
-            dishId = dish.Id,
-            userId = user.Id
-        });
+            dishInCart.Amount += 1;
+        }
+        else
+        {
+            await _context.DishesInCart.AddAsync(new DishInCart
+            {
+                Id = new Guid(),
+                Amount = 1,
+                dishId = dish.Id,
+                userId = user.Id
+            });
+        }
 
         await _context.SaveChangesAsync();
+        
         return new OkObjectResult(new
         {
             message = "Dish successfully added"
+        });
+    }
+
+    public async Task<ActionResult> DecreaseDish(string token, Guid dishId, bool increase = false)
+    {
+        ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+        Dish? dish = _context.Dishes.FirstOrDefault(dsh => dsh.Id == dishId);
+
+        if (dish == null)
+        {
+            throw new InvalidOperationException("Invalid dishId");
+        }
+        
+        DishInCart? dishInCart =
+            _context.DishesInCart.FirstOrDefault(dsh => dsh.dishId == dish.Id && dsh.userId == userToken.userId);
+        if (dishInCart == null)
+        {
+            throw new InvalidOperationException("User doesn't have this dish in his cart");
+        }
+
+        if (!increase)
+        {
+            _context.DishesInCart.Remove(dishInCart);
+            await _context.SaveChangesAsync();
+            
+            return new OkObjectResult(new
+            {
+                message = "Dish successfully deleted"
+            });
+        }
+        
+        dishInCart.Amount -= 1;
+        await _context.SaveChangesAsync();
+
+        return new OkObjectResult(new
+        {   
+            message = "Amount of dishes successfully decreased"
         });
     }
 }

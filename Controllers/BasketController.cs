@@ -29,14 +29,14 @@ public class BasketController: ControllerBase
     [Authorize]
     [HttpPost]
     [Route("dish/{dishId}")]
-    public ActionResult AddDish(Guid dishId)
+    public async Task<ActionResult> AddDish(Guid dishId)
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
 
         try
         {
-            return Ok(_basketService.AddDish(token, dishId));
+            return await _basketService.AddDish(token, dishId);
         }
         catch (InvalidOperationException ex)
         {
@@ -51,8 +51,22 @@ public class BasketController: ControllerBase
     [Authorize]
     [HttpDelete]
     [Route("dish/{dishId}")]
-    public ActionResult Decrease()
+    public async Task<ActionResult> Decrease(Guid dishId, bool increase = false)
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return await _basketService.DecreaseDish(token, dishId, increase);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }

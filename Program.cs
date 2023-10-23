@@ -32,8 +32,8 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = config["JwtSettings:Issuer"],
         ValidAudience = config["JwtSettings:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"])),
-        ValidateIssuer = false,
-        ValidateAudience = false,           //Я подумал, что нам не очень нужны на данном проекте проверки
+        ValidateIssuer = true,
+        ValidateAudience = true,           
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
@@ -61,11 +61,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 
 app.UseRouting();
+
+app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
