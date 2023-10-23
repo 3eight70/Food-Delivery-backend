@@ -50,7 +50,7 @@ public class DishService: IDishService
         }
         else if (sorting == DishSorting.RatingDesc)
         {
-            dishes = dishes.OrderByDescending(dish => dish.Rating)
+            dishes = dishes.OrderByDescending(dish => dish.Rating);
         }
 
         var dishList = await dishes.ToListAsync();
