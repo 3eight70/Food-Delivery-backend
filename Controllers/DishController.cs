@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using webNET_Hits_backend_aspnet_project_1.Models;
@@ -54,18 +55,52 @@ public class DishController: ControllerBase
             return StatusCode(500, "Something went wrong");
         }
     }
-
+    [Authorize]
     [HttpGet]
     [Route("{id}/rating/check")]
-    public ActionResult<Dish> CheckAuth()
+    public ActionResult<bool> CheckAuth(Guid id)
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return dishService.CheckIfUserCanRateDish(token, id);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 
+    [Authorize]
     [HttpPost]
     [Route("{id}/rating")]
-    public ActionResult<Dish> SetRating()
+    public async Task<ActionResult> SetRating(Guid id, Int32 ratingScore)
     {
-        return null;
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+        
+        if (ratingScore < 0 || ratingScore > 10)
+        {
+            return StatusCode(400, "Rating score must be between 0 and 10");
+        }
+
+        try
+        {
+            return await dishService.SetRating(token, id, ratingScore);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(400, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 }

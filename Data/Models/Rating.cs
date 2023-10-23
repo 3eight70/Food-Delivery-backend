@@ -9,14 +9,17 @@ namespace webNET_Hits_backend_aspnet_project_1.Models;
 
 public class Rating
 {
-    [ForeignKey("User")]
+    [Key]
+    public Guid Id { get; set; }
+    [ForeignKey("UserId")]
     public Guid UserId { get; set; }
-    [ForeignKey("Dish")]
+    [ForeignKey("DishId")]
     public Guid DishId { get; set; }
     public double Value { get; set; }
 
-    public Rating(Guid userId, Guid dishId, double value)
+    public Rating(Guid id, Guid userId, Guid dishId, double value)
     {
+        Id = id;
         UserId = userId;
         DishId = dishId;
         Value = value;

@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Models;
 
@@ -14,7 +16,9 @@ public class Order
     [Required]
     public Status status { get; set; }
     [Required]
-    public int Price { get; set; }
+    public double Price { get; set; }
     [Required]
-    private List<DishInCart> DishesInCart { get; set; }
+    public List<DishBasketDTO> DishesInCart { get; set; }
+    [ForeignKey("UserId")]
+    public Guid userId { get; set; }
 }
