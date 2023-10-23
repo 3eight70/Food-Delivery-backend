@@ -48,6 +48,10 @@ public class DishService: IDishService
         {
             dishes = dishes.OrderBy(dish => dish.Rating);
         }
+        else if (sorting == DishSorting.RatingDesc)
+        {
+            dishes = dishes.OrderByDescending(dish => dish.Rating)
+        }
 
         var dishList = await dishes.ToListAsync();
 
