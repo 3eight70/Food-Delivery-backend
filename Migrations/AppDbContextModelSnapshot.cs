@@ -68,6 +68,9 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Property<double>("TotalPrice")
                         .HasColumnType("double precision");
 
+                    b.Property<Guid>("dishId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
@@ -102,7 +105,7 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<double?>("Rating")
+                    b.Property<double>("Rating")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
@@ -158,16 +161,20 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
 
             modelBuilder.Entity("webNET_Hits_backend_aspnet_project_1.Models.Rating", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("DishId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.Property<double>("Value")
                         .HasColumnType("double precision");
 
-                    b.HasKey("UserId", "DishId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DishId")
                         .IsUnique();

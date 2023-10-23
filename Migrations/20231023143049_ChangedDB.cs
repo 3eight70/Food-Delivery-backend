@@ -6,11 +6,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace webNET_Hits_backend_aspnet_project_1.Migrations
 {
     /// <inheritdoc />
-    public partial class AddListInOrder : Migration
+    public partial class ChangedDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_Ratings",
+                table: "Ratings");
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "Id",
+                table: "Ratings",
+                type: "uuid",
+                nullable: false,
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+
             migrationBuilder.AlterColumn<double>(
                 name: "Price",
                 table: "Orders",
@@ -18,6 +29,28 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "integer");
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "userId",
+                table: "Orders",
+                type: "uuid",
+                nullable: false,
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+
+            migrationBuilder.AlterColumn<double>(
+                name: "Rating",
+                table: "Dishes",
+                type: "double precision",
+                nullable: false,
+                defaultValue: 0.0,
+                oldClrType: typeof(double),
+                oldType: "double precision",
+                oldNullable: true);
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_Ratings",
+                table: "Ratings",
+                column: "Id");
 
             migrationBuilder.CreateTable(
                 name: "DishBasketDTO",
@@ -52,6 +85,18 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
             migrationBuilder.DropTable(
                 name: "DishBasketDTO");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_Ratings",
+                table: "Ratings");
+
+            migrationBuilder.DropColumn(
+                name: "Id",
+                table: "Ratings");
+
+            migrationBuilder.DropColumn(
+                name: "userId",
+                table: "Orders");
+
             migrationBuilder.AlterColumn<int>(
                 name: "Price",
                 table: "Orders",
@@ -59,6 +104,19 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 nullable: false,
                 oldClrType: typeof(double),
                 oldType: "double precision");
+
+            migrationBuilder.AlterColumn<double>(
+                name: "Rating",
+                table: "Dishes",
+                type: "double precision",
+                nullable: true,
+                oldClrType: typeof(double),
+                oldType: "double precision");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_Ratings",
+                table: "Ratings",
+                columns: new[] { "UserId", "DishId" });
         }
     }
 }

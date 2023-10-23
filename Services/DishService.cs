@@ -79,4 +79,69 @@ public class DishService: IDishService
 
         return _dish;
     }
+
+    public bool CheckIfUserCanRateDish(string token, Guid dishId)
+    {
+        ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+
+        List<Order> orders = _context.Orders.Include(ord => ord.DishesInCart)
+            .Where(ord => ord.userId == userToken.userId && ord.status == Status.Delivered).ToList();
+
+        Dish? dish = _context.Dishes.FirstOrDefault(dsh => dsh.Id == dishId);
+
+        if (dish == null)
+        {
+            throw new InvalidOperationException("Dish with this id doesn't exist");
+        }
+
+        foreach (Order order in orders)
+        {
+            foreach (DishBasketDTO d in order.DishesInCart)
+            {
+                if (d.dishId == dish.Id)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public async Task<ActionResult> SetRating(string token, Guid id, Int32 ratingScore)
+    {
+        ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+
+        Dish? dish = _context.Dishes.FirstOrDefault(dsh => dsh.Id == id);
+
+        if (dish == null)
+        {
+            throw new InvalidOperationException("Dish with this id doesn't exist");
+        }
+
+        if (!CheckIfUserCanRateDish(token, id))
+        {
+            throw new InvalidOperationException("User can't set rating on dish that wasn't ordered");
+        }
+
+        Rating? rating = _context.Ratings.FirstOrDefault(rat => rat.UserId == userToken.userId && rat.DishId == dish.Id);
+
+        if (rating == null)
+        {
+            rating = new Rating(new Guid(), userToken.userId, dish.Id, ratingScore);
+            await _context.Ratings.AddAsync(rating);
+        }
+        else
+        {
+            rating.Value = ratingScore;
+        }
+        await _context.SaveChangesAsync();
+        dish.Rating = _context.Ratings.Where(rating => rating.DishId == dish.Id).Sum(rating => rating.Value) / _context.Ratings.Count(rating=> rating.DishId == dish.Id);
+        await _context.SaveChangesAsync();
+
+        return new OkObjectResult(new
+        {
+            message = "Rating successfully added"
+        });
+    }
 }

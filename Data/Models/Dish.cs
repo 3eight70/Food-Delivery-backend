@@ -17,7 +17,7 @@ public class Dish
     public String Photo { get; set; }
     [Required]
     public bool IsVegetarian { get; set; }
-    public double? Rating { get; set; }
+    public double Rating { get; set; }
     [Required]
     public Category Category { get; set; }
 
