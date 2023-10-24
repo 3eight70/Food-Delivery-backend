@@ -26,8 +26,9 @@ public class BasketService: IBasketService
             var currentDish = _context.Dishes.FirstOrDefault(dsh => dsh.Id == dish.dishId);
             dishesInCart.Add(new DishBasketDTO
             {
+                Id = new Guid(),
                 Amount = dish.Amount,
-                Id = dish.dishId,
+                dishId = dish.dishId,
                 Image = currentDish.Photo,
                 Name = currentDish.Name,
                 Price = currentDish.Price,

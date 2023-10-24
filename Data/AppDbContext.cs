@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_1.Models;
+using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Data;
 
@@ -20,7 +21,7 @@ public class AppDbContext: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<Rating>().HasKey(r => new { r.UserId, r.DishId });
+        modelBuilder.Entity<Rating>().HasKey(r => r.Id);
         
         base.OnModelCreating(modelBuilder);
     }

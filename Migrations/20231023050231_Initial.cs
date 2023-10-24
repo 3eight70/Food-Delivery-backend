@@ -107,13 +107,13 @@ namespace webNET_Hits_backend_aspnet_project_1.Migrations
                 name: "IX_Ratings_DishId",
                 table: "Ratings",
                 column: "DishId",
-                unique: true);
+                unique: false);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",
                 table: "Ratings",
                 column: "UserId",
-                unique: true);
+                unique: false);
         }
 
         /// <inheritdoc />
