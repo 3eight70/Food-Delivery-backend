@@ -11,9 +11,9 @@ public class UserRegisterModel
     public DateTime BirthDate { get; set; }
     [Required]
     public Gender gender { get; set; }
-    public String Phone { get; set; }
+    public String? Phone { get; set; }
     [Required]
     public String Email { get; set; }
-    public Guid Address { get; set; }
+    public Guid? Address { get; set; }
     
 }

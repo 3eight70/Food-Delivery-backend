@@ -85,13 +85,19 @@ public class UserService : IUserService
         {
             if (user.Email == model.Email)
             {
-                throw new InvalidOperationException("Account with this email already exists");
+                throw new InvalidOperationException("Username '" + model.Email + "' is already taken");
             }
         }
         
         if (model.Phone != null && !IsValidPhoneNumber(model.Phone) )
         {
             throw new InvalidOperationException("Invalid phone number");
+        }
+
+        if (!IsValidPassword(model.Password))
+        {
+            throw new InvalidOperationException(
+                "Password must be at least 6 letters and have at least 1 digit");
         }
 
         if (!IsValidDate(model.BirthDate))
@@ -101,6 +107,11 @@ public class UserService : IUserService
 
         AsHouse? house = _garContext.AsHouses.FirstOrDefault(h => h.Objectguid == model.Address);
 
+        if (model.Address != null && house == null && address == null)
+        {
+            throw new InvalidOperationException("Address not found");
+        }
+
         user = new User(new Guid(), model.FullName, model.BirthDate, model.gender, model.Phone, model.Email,
             CreateSHA256(model.Password));
 
@@ -108,6 +119,7 @@ public class UserService : IUserService
         {
             user.Address = house.Objectguid;
         }
+        
 
         var encodedJWT = CreateToken(user);
         
@@ -182,6 +194,11 @@ public class UserService : IUserService
     private bool IsValidPhoneNumber(string phoneNumber)
     {
         return Regex.IsMatch(phoneNumber, @"^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$");
+    }
+
+    private bool IsValidPassword(string password)
+    {
+        return Regex.IsMatch(password, @"^(?=.*\d).{6,}$");
     }
 
     private bool IsValidDate(DateTime date)
