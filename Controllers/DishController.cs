@@ -47,7 +47,7 @@ public class DishController: ControllerBase
             return StatusCode(400, new
             {
                 status = "error",
-                message = $"Dish with id={ex.Message} doesn't exist in database"
+                message = $"Dish with id={ex.Message} doesn't exist in database" // забить dishService
             });
         }
         catch (Exception ex)
@@ -69,7 +69,7 @@ public class DishController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return StatusCode(400, ex.Message);  //Логать ошибки
         }
         catch (Exception ex)
         {

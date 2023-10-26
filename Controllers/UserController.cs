@@ -85,7 +85,17 @@ public class UserController: ControllerBase
     [Route("profile")]
     public ActionResult<UserDTO> Get()
     {
-        return userService.GetUserProfile();
+        var token = Request.Headers["Authorization"].ToString();
+        token = token.Substring("Bearer ".Length);
+
+        try
+        {
+            return userService.GetUserProfile(token);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Something went wrong");
+        }
     }
 
     [Authorize]
