@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_1;
 using webNET_Hits_backend_aspnet_project_1.Data;
-using webNET_Hits_backend_aspnet_project_1.Models;
+using Microsoft.Extensions.Logging;
 using webNET_Hits_backend_aspnet_project_1.Services;
 
 
@@ -16,6 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 var garConnection = builder.Configuration.GetConnectionString("GarConnection");
 var config = builder.Configuration;
+
+var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.AddConsole().SetMinimumLevel(LogLevel.Information);
+});
+
+var logger = loggerFactory.CreateLogger<Program>();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
 builder.Services.AddDbContext<GarContext>(options => options.UseNpgsql(garConnection));
@@ -38,7 +45,7 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuerSigningKey = true
     };
 });
-    
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -49,6 +56,7 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddSingleton<ILogger>(logger);
 
 
 var app = builder.Build();

@@ -48,7 +48,8 @@ public class UserService : IUserService
     public string LoginUser(LoginCredentials userData)
     {
         User? user =
-            _context.Users.FirstOrDefault(us => us.Email == userData.Email && us.Password == CreateSHA256(userData.Password));
+            _context.Users.FirstOrDefault(us =>
+                us.Email == userData.Email && us.Password == CreateSHA256(userData.Password));
 
         if (user == null) return null;
 
@@ -92,7 +93,7 @@ public class UserService : IUserService
                 throw new InvalidOperationException("Username '" + model.Email + "' is already taken");
             }
         }
-        
+
 
         AsHouse? house = _garContext.AsHouses.FirstOrDefault(h => h.Objectguid == model.Address);
 
@@ -108,21 +109,21 @@ public class UserService : IUserService
         {
             user.Address = house.Objectguid;
         }
-        
+
 
         var encodedJWT = CreateToken(user);
-        
+
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
         AddToken(user, encodedJWT);
-        
+
         return new OkObjectResult(new
         {
             access_token = encodedJWT
         });
     }
-    
+
     public static string CreateSHA256(string input)
     {
         using SHA256 hash = SHA256.Create();
@@ -143,7 +144,7 @@ public class UserService : IUserService
                 {
                     throw new InvalidDataException("Invalid birth date");
                 }
-                
+
                 user.FullName = model.FullName;
                 user.gender = model.gender;
                 user.Address = model.Address;
@@ -172,6 +173,7 @@ public class UserService : IUserService
             tkn = new ActiveToken(new Guid(), user.Id, token, DateTime.UtcNow.AddMinutes(30));
             await _context.ActiveTokens.AddAsync(tkn);
         }
+
         await _context.SaveChangesAsync();
     }
 
@@ -189,9 +191,10 @@ public class UserService : IUserService
             claims: claims,
             expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
             signingCredentials: new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"])), SecurityAlgorithms.HmacSha256)
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"])),
+                SecurityAlgorithms.HmacSha256)
         );
 
-        return  new JwtSecurityTokenHandler().WriteToken(jwt);
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
     }
 }

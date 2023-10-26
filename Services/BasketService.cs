@@ -5,7 +5,7 @@ using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Services;
 
-public class BasketService: IBasketService
+public class BasketService : IBasketService
 {
     private readonly AppDbContext _context;
 
@@ -35,7 +35,7 @@ public class BasketService: IBasketService
                 TotalPrice = dish.Amount * currentDish.Price
             });
         }
-        
+
         return dishesInCart.ToArray();
     }
 
@@ -67,7 +67,7 @@ public class BasketService: IBasketService
         }
 
         await _context.SaveChangesAsync();
-        
+
         return new OkObjectResult(new
         {
             message = "Dish successfully added"
@@ -83,7 +83,7 @@ public class BasketService: IBasketService
         {
             throw new InvalidOperationException("Invalid dishId");
         }
-        
+
         DishInCart? dishInCart =
             _context.DishesInCart.FirstOrDefault(dsh => dsh.dishId == dish.Id && dsh.userId == userToken.userId);
         if (dishInCart == null)
@@ -95,18 +95,18 @@ public class BasketService: IBasketService
         {
             _context.DishesInCart.Remove(dishInCart);
             await _context.SaveChangesAsync();
-            
+
             return new OkObjectResult(new
             {
                 message = "Dish successfully deleted"
             });
         }
-        
+
         dishInCart.Amount -= 1;
         await _context.SaveChangesAsync();
 
         return new OkObjectResult(new
-        {   
+        {
             message = "Amount of dishes successfully decreased"
         });
     }

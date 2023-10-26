@@ -8,7 +8,7 @@ using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Services;
 
-public class DishService: IDishService
+public class DishService : IDishService
 {
     private readonly AppDbContext _context;
 
@@ -16,7 +16,7 @@ public class DishService: IDishService
     {
         _context = context;
     }
-    
+
     public async Task<DishPagedListDTO> GetDishes(Category[] categories, DishSorting sorting, bool vegetarian, int page)
     {
         var dishes = _context.Dishes.AsQueryable();
@@ -54,13 +54,19 @@ public class DishService: IDishService
         }
 
         const int pageSize = 5;
-        
+
         int amountOfDishList = dishes.Count();
         var dishList = await dishes.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         PageInfo pageInfo = new PageInfo(amountOfDishList, page, pageSize);
+
+        if (pageInfo.TotalPages < page)
+        {
+            throw new InvalidOperationException("Invalid page number");
+        }
+
         DishPagedListDTO response = new DishPagedListDTO(dishList, pageInfo);
-        
+
         return response;
     }
 
@@ -70,9 +76,9 @@ public class DishService: IDishService
 
         if (dish == null)
         {
-            throw new InvalidOperationException(id.ToString());
+            throw new InvalidOperationException($"Dish with id={id.ToString()} doesn't exist in database");
         }
-        
+
         DishDTO _dish = new DishDTO
         {
             Category = dish.Category,
@@ -131,7 +137,8 @@ public class DishService: IDishService
             throw new InvalidOperationException("User can't set rating on dish that wasn't ordered");
         }
 
-        Rating? rating = _context.Ratings.FirstOrDefault(rat => rat.UserId == userToken.userId && rat.DishId == dish.Id);
+        Rating? rating =
+            _context.Ratings.FirstOrDefault(rat => rat.UserId == userToken.userId && rat.DishId == dish.Id);
 
         if (rating == null)
         {
@@ -142,8 +149,10 @@ public class DishService: IDishService
         {
             rating.Value = ratingScore;
         }
+
         await _context.SaveChangesAsync();
-        dish.Rating = _context.Ratings.Where(rating => rating.DishId == dish.Id).Sum(rating => rating.Value) / _context.Ratings.Count(rating=> rating.DishId == dish.Id);
+        dish.Rating = _context.Ratings.Where(rating => rating.DishId == dish.Id).Sum(rating => rating.Value) /
+                      _context.Ratings.Count(rating => rating.DishId == dish.Id);
         await _context.SaveChangesAsync();
 
         return new OkObjectResult(new

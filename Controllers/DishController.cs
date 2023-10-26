@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using webNET_Hits_backend_aspnet_project_1.Data;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -10,17 +11,21 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [ApiController]
 [Route("api/dish")]
-public class DishController: ControllerBase
+public class DishController : ControllerBase
 {
     private IDishService dishService;
 
-    public DishController(IDishService _dishService)
+    private readonly ILogger<DishController> _logger;
+
+    public DishController(IDishService _dishService, ILogger<DishController> logger)
     {
         dishService = _dishService;
+        logger = _logger;
     }
-    
+
     [HttpGet]
-    public async Task<ActionResult> GetList([FromQuery]Category[] categories, DishSorting sorting, bool vegetarian = false, int page = 1)
+    public async Task<ActionResult> GetList([FromQuery] Category[] categories, DishSorting sorting,
+        bool vegetarian = false, int page = 1)
     {
         try
         {
@@ -29,7 +34,13 @@ public class DishController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such parameters: {sorting}, {vegetarian}, {page}");
+
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -44,17 +55,24 @@ public class DishController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, new
+            return BadRequest(new StatusResponse
             {
-                status = "error",
-                message = $"Dish with id={ex.Message} doesn't exist in database" // забить dishService
+                Status = "Error",
+                Message = ex.Message
             });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such id: {id}");
+
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
+
     [Authorize]
     [HttpGet]
     [Route("{id}/rating/check")]
@@ -69,11 +87,21 @@ public class DishController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);  //Логать ошибки
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such id: {id}");
+
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -84,10 +112,14 @@ public class DishController: ControllerBase
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
-        
+
         if (ratingScore < 0 || ratingScore > 10)
         {
-            return StatusCode(400, "Rating score must be between 0 and 10");
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = "Rating score must be between 0 and 10"
+            });
         }
 
         try
@@ -96,11 +128,21 @@ public class DishController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such id and score: {id}, {ratingScore}");
+
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 }
