@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Data;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -13,10 +14,13 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 public class UserController: ControllerBase
 {
     private IUserService userService;
+    
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(IUserService user)
+    public UserController(IUserService user, ILogger<UserController> logger)
     {
         userService = user;
+        _logger = logger;
     }
     
     [Authorize]
@@ -45,6 +49,7 @@ public class UserController: ControllerBase
                     message = "Login failed"
                 });
             }
+            
             return Ok(new
             {
                 access_token = response
@@ -52,7 +57,13 @@ public class UserController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Invalid email or password");
+            _logger.LogError(ex, $"Error occured with such parameters: {model.Email}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
     
@@ -62,7 +73,11 @@ public class UserController: ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return StatusCode(401, "User model is invalid.");
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = "User model is invalid."
+            });
         }
 
         try
@@ -71,11 +86,21 @@ public class UserController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong with user model");
+            _logger.LogError(ex, $"Error occured with such parameters: {model.Email}, {model.gender}, {model.Address}, {model.Phone}, {model.Phone}, {model.BirthDate}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
         
     }
@@ -94,7 +119,11 @@ public class UserController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -112,11 +141,21 @@ public class UserController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such parameters: {model.gender}, {model.Address}, {model.Phone}, {model.Phone}, {model.BirthDate}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 }

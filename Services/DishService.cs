@@ -59,6 +59,12 @@ public class DishService: IDishService
         var dishList = await dishes.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         PageInfo pageInfo = new PageInfo(amountOfDishList, page, pageSize);
+
+        if (pageInfo.TotalPages < page)
+        {
+            throw new InvalidOperationException("Invalid page number");
+        }
+        
         DishPagedListDTO response = new DishPagedListDTO(dishList, pageInfo);
         
         return response;
@@ -70,7 +76,7 @@ public class DishService: IDishService
 
         if (dish == null)
         {
-            throw new InvalidOperationException(id.ToString());
+            throw new InvalidOperationException($"Dish with id={id.ToString()} doesn't exist in database");
         }
         
         DishDTO _dish = new DishDTO

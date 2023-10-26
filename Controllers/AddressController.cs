@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Data;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Services;
 
@@ -11,9 +12,12 @@ public class AddressController: ControllerBase
 {
     private IAddressService addressService;
 
-    public AddressController(IAddressService _addressService)
+    private readonly ILogger<AddressController> _logger;
+
+    public AddressController(IAddressService _addressService, ILogger<AddressController> logger)
     {
         addressService = _addressService;
+        _logger = logger;
     }
     
     [HttpGet]
@@ -26,7 +30,13 @@ public class AddressController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such params: {parentObjectId}, {query}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -44,7 +54,13 @@ public class AddressController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such id: {objectGuid}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 }

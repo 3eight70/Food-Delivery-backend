@@ -115,7 +115,7 @@ public class OrderService: IOrderService
     {
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => token == tkn.token);
 
-        Order? order = _context.Orders.Include(ord => ord.DishesInCart).FirstOrDefault(ord => ord.Id == id);
+        Order? order = _context.Orders.Include(ord => ord.DishesInCart).FirstOrDefault(ord => ord.Id == id && ord.userId == userToken.userId);
         
         if (order == null)
         {

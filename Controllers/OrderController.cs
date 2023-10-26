@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Data;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -11,10 +12,13 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 public class OrderController: ControllerBase
 {
     private readonly IOrderService _orderService;
+    
+    private readonly ILogger<OrderController> _logger;
 
-    public OrderController(IOrderService orderService)
+    public OrderController(IOrderService orderService, ILogger<OrderController> logger)
     {
         _orderService = orderService;
+        _logger = logger;
     }
     
     [Authorize]
@@ -31,11 +35,21 @@ public class OrderController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such id: {id}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -52,7 +66,11 @@ public class OrderController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -69,7 +87,11 @@ public class OrderController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
         catch (InvalidDataException ex)
         {
@@ -77,7 +99,13 @@ public class OrderController: ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such parameters: {order.AddressId}, {order.DeliveryTime}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 
@@ -95,11 +123,21 @@ public class OrderController: ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return StatusCode(400, ex.Message);
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return StatusCode(500, "Something went wrong");
+            _logger.LogError(ex, $"Error occured with such id: {id}");
+            
+            return StatusCode(500, new StatusResponse
+            {
+                Status = "Error",
+                Message = "Something went wrong"
+            });
         }
     }
 }
