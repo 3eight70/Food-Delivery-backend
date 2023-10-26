@@ -53,9 +53,12 @@ public class DishService: IDishService
             dishes = dishes.OrderByDescending(dish => dish.Rating);
         }
 
-        var dishList = await dishes.ToListAsync();
+        const int pageSize = 5;
+        
+        int amountOfDishList = dishes.Count();
+        var dishList = await dishes.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-        PageInfo pageInfo = new PageInfo(dishList.Count(), page, 5);
+        PageInfo pageInfo = new PageInfo(amountOfDishList, page, pageSize);
         DishPagedListDTO response = new DishPagedListDTO(dishList, pageInfo);
         
         return response;

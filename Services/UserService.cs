@@ -27,9 +27,13 @@ public class UserService : IUserService
         _garContext = garContext;
     }
 
-    public UserDTO GetUserProfile()
+    public UserDTO GetUserProfile(string token)
     {
-        return _context.Users.Select(user => new UserDTO
+        ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+
+        User user = _context.Users.FirstOrDefault(us => us.Id == userToken.userId);
+
+        return new UserDTO
         {
             Id = user.Id,
             FullName = user.FullName,
@@ -38,7 +42,7 @@ public class UserService : IUserService
             Phone = user.Phone,
             Email = user.Email,
             Address = user.Address,
-        }).FirstOrDefault();
+        };
     }
 
     public string LoginUser(LoginCredentials userData)
@@ -89,21 +93,6 @@ public class UserService : IUserService
             }
         }
         
-        if (model.Phone != null && !IsValidPhoneNumber(model.Phone) )
-        {
-            throw new InvalidOperationException("Invalid phone number");
-        }
-
-        if (!IsValidPassword(model.Password))
-        {
-            throw new InvalidOperationException(
-                "Password must be at least 6 letters and have at least 1 digit");
-        }
-
-        if (!IsValidDate(model.BirthDate))
-        {
-            throw new InvalidOperationException("Invalid Birth Date");
-        }
 
         AsHouse? house = _garContext.AsHouses.FirstOrDefault(h => h.Objectguid == model.Address);
 
@@ -155,11 +144,6 @@ public class UserService : IUserService
                     throw new InvalidDataException("Invalid birth date");
                 }
                 
-                if (!IsValidPhoneNumber(model.Phone))
-                {
-                    throw new InvalidDataException("Invalid phone number");
-                }
-                
                 user.FullName = model.FullName;
                 user.gender = model.gender;
                 user.Address = model.Address;
@@ -189,16 +173,6 @@ public class UserService : IUserService
             await _context.ActiveTokens.AddAsync(tkn);
         }
         await _context.SaveChangesAsync();
-    }
-    
-    private bool IsValidPhoneNumber(string phoneNumber)
-    {
-        return Regex.IsMatch(phoneNumber, @"^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$");
-    }
-
-    private bool IsValidPassword(string password)
-    {
-        return Regex.IsMatch(password, @"^(?=.*\d).{6,}$");
     }
 
     private bool IsValidDate(DateTime date)

@@ -9,6 +9,7 @@ public class UserEditModel
     public DateTime BirthDate { get; set; }
     [Required]
     public Gender gender { get; set; }
+    [RegularExpression("^\\+7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}$", ErrorMessage = "Invalid phone number")]
     public String Phone { get; set; }
     public Guid Address { get; set; }
 }
