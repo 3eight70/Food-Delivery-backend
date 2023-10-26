@@ -7,7 +7,7 @@ using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 namespace webNET_Hits_backend_aspnet_project_1.Services;
 
-public class OrderService: IOrderService
+public class OrderService : IOrderService
 {
     private readonly AppDbContext _context;
 
@@ -21,14 +21,14 @@ public class OrderService: IOrderService
         _garContext = garContext;
         _basketService = basketService;
     }
-    
+
     public OrderInfoDTO[] GetList(string token)
     {
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
 
         List<Order> orders = _context.Orders.Where(order => order.userId == userToken.userId).ToList();
 
-        List <OrderInfoDTO> orderDTOs = new List<OrderInfoDTO>();
+        List<OrderInfoDTO> orderDTOs = new List<OrderInfoDTO>();
 
         foreach (Order order in orders)
         {
@@ -52,7 +52,7 @@ public class OrderService: IOrderService
             throw new InvalidOperationException(
                 "Invalid delivery time. Delivery time must be more than current datetime on 60 minutes");
         }
-            
+
         var address = _garContext.AsAddrObjs.FirstOrDefault(add => add.Objectguid == order.AddressId);
 
         if (address != null)
@@ -66,17 +66,18 @@ public class OrderService: IOrderService
         {
             throw new InvalidDataException("Not found object with ObjectGuid=" + order.AddressId);
         }
+
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
 
         if (userToken == null) return null;
-        
+
         var dishesInCart = _basketService.GetCart(token).ToList();
-        
+
         if (dishesInCart.IsNullOrEmpty())
         {
             throw new InvalidOperationException("User doesn't have dishes in his cart");
         }
-        
+
 
         double totalPrice = 0;
 
@@ -84,7 +85,7 @@ public class OrderService: IOrderService
         {
             totalPrice += dish.TotalPrice;
         }
-        
+
         await _context.Orders.AddAsync(new Order
         {
             Id = new Guid(),
@@ -115,8 +116,9 @@ public class OrderService: IOrderService
     {
         ActiveToken userToken = _context.ActiveTokens.FirstOrDefault(tkn => token == tkn.token);
 
-        Order? order = _context.Orders.Include(ord => ord.DishesInCart).FirstOrDefault(ord => ord.Id == id && ord.userId == userToken.userId);
-        
+        Order? order = _context.Orders.Include(ord => ord.DishesInCart)
+            .FirstOrDefault(ord => ord.Id == id && ord.userId == userToken.userId);
+
         if (order == null)
         {
             throw new InvalidOperationException("Order with current id doesn't exist");

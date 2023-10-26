@@ -9,10 +9,10 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [Route("api/order")]
 [ApiController]
-public class OrderController: ControllerBase
+public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
-    
+
     private readonly ILogger<OrderController> _logger;
 
     public OrderController(IOrderService orderService, ILogger<OrderController> logger)
@@ -20,7 +20,7 @@ public class OrderController: ControllerBase
         _orderService = orderService;
         _logger = logger;
     }
-    
+
     [Authorize]
     [HttpGet]
     [Route("{id}")]
@@ -44,7 +44,7 @@ public class OrderController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such id: {id}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
@@ -100,7 +100,7 @@ public class OrderController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such parameters: {order.AddressId}, {order.DeliveryTime}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
@@ -132,7 +132,7 @@ public class OrderController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such id: {id}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",

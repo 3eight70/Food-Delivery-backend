@@ -8,10 +8,10 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [ApiController]
 [Route("api/basket")]
-public class BasketController: ControllerBase
+public class BasketController : ControllerBase
 {
     private readonly IBasketService _basketService;
-    
+
     private readonly ILogger<BasketController> _logger;
 
     public BasketController(IBasketService basketService, ILogger<BasketController> logger)
@@ -19,10 +19,10 @@ public class BasketController: ControllerBase
         _basketService = basketService;
         _logger = logger;
     }
-    
+
     [Authorize]
     [HttpGet]
-    public ActionResult Get()         
+    public ActionResult Get()
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
@@ -60,7 +60,7 @@ public class BasketController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such id: {dishId}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
@@ -88,7 +88,7 @@ public class BasketController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such id and bool param: {dishId}, {increase}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",

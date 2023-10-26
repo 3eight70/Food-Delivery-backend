@@ -11,10 +11,10 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [Route("api/account/")]
 [ApiController]
-public class UserController: ControllerBase
+public class UserController : ControllerBase
 {
     private IUserService userService;
-    
+
     private readonly ILogger<UserController> _logger;
 
     public UserController(IUserService user, ILogger<UserController> logger)
@@ -22,7 +22,7 @@ public class UserController: ControllerBase
         userService = user;
         _logger = logger;
     }
-    
+
     [Authorize]
     [HttpPost]
     [Route("logout")]
@@ -30,10 +30,10 @@ public class UserController: ControllerBase
     {
         var token = Request.Headers["Authorization"].ToString();
         token = token.Substring("Bearer ".Length);
-        
+
         return await userService.LogoutUser(token);
     }
-    
+
     [HttpPost]
     [Route("login")]
     public async Task<ActionResult> Login(LoginCredentials model)
@@ -49,7 +49,7 @@ public class UserController: ControllerBase
                     message = "Login failed"
                 });
             }
-            
+
             return Ok(new
             {
                 access_token = response
@@ -58,7 +58,7 @@ public class UserController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such parameters: {model.Email}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
@@ -66,7 +66,7 @@ public class UserController: ControllerBase
             });
         }
     }
-    
+
     [HttpPost]
     [Route("register")]
     public async Task<ActionResult> Post(UserRegisterModel model)
@@ -94,18 +94,18 @@ public class UserController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occured with such parameters: {model.Email}, {model.gender}, {model.Address}, {model.Phone}, {model.Phone}, {model.BirthDate}");
-            
+            _logger.LogError(ex,
+                $"Error occured with such parameters: {model.Email}, {model.gender}, {model.Address}, {model.Phone}, {model.Phone}, {model.BirthDate}");
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
                 Message = "Something went wrong"
             });
         }
-        
     }
-    
-   [Authorize]
+
+    [Authorize]
     [HttpGet]
     [Route("profile")]
     public ActionResult<UserDTO> Get()
@@ -149,8 +149,9 @@ public class UserController: ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occured with such parameters: {model.gender}, {model.Address}, {model.Phone}, {model.Phone}, {model.BirthDate}");
-            
+            _logger.LogError(ex,
+                $"Error occured with such parameters: {model.gender}, {model.Address}, {model.Phone}, {model.Phone}, {model.BirthDate}");
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",

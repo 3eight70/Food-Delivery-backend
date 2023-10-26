@@ -17,11 +17,13 @@ public class HomeController : Controller
         if (_context.Dishes.Count() == 0)
         {
             Dish bananaAndAr = new Dish(new Guid(), "Сладкий ролл с арахисом и бананом", 210,
-                "Сырная лепешка, банан, арахис, сливочный сыр, шоколадная крошка, топинг карамельный", "https://mistertako.ru/uploads/products/a4772f7a-7a6f-11eb-850a-0050569dbef0.jpeg", true,
+                "Сырная лепешка, банан, арахис, сливочный сыр, шоколадная крошка, топинг карамельный",
+                "https://mistertako.ru/uploads/products/a4772f7a-7a6f-11eb-850a-0050569dbef0.jpeg", true,
                 Category.Dessert);
-            
-            Dish bananaAndKiwi = new Dish (new Guid(), "Сладкий ролл с бананом и киви", 220,
-                "Сырная лепешка, банан, киви, сливочный сыр, топинг клубничный", "https://mistertako.ru/uploads/products/9e7c8581-7a6f-11eb-850a-0050569dbef0.jpeg", true,
+
+            Dish bananaAndKiwi = new Dish(new Guid(), "Сладкий ролл с бананом и киви", 220,
+                "Сырная лепешка, банан, киви, сливочный сыр, топинг клубничный",
+                "https://mistertako.ru/uploads/products/9e7c8581-7a6f-11eb-850a-0050569dbef0.jpeg", true,
                 Category.Dessert);
 
             Dish ramen = new Dish(new Guid(), "Сливочный рамен с курицей и шампиньонами", 260,
@@ -41,7 +43,7 @@ public class HomeController : Controller
             Dish classicCocktail = new Dish(new Guid(), "Коктейль классический", 140, "Классический молочный коктейль",
                 "https://mistertako.ru/uploads/products/120b46bc-5f32-11e8-8f7d-00155dd9fd01.jpg", true,
                 Category.Drink);
-            
+
             _context.Dishes.AddRange(bananaAndAr, bananaAndKiwi, ramen, wokVegetables, belissimo, classicCocktail);
             _context.SaveChanges();
         }
@@ -58,6 +60,6 @@ public class HomeController : Controller
         PageInfo pageInfo = new PageInfo(count, page, pageSize);
         DishPagedListDTO dishPagedList = new DishPagedListDTO(items, pageInfo);
 
-        return dishPagedList;     
+        return dishPagedList;
     }
 }

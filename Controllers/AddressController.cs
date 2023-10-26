@@ -8,7 +8,7 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 
 [ApiController]
 [Route("api/address")]
-public class AddressController: ControllerBase
+public class AddressController : ControllerBase
 {
     private IAddressService addressService;
 
@@ -19,7 +19,7 @@ public class AddressController: ControllerBase
         addressService = _addressService;
         _logger = logger;
     }
-    
+
     [HttpGet]
     [Route("search")]
     public async Task<ActionResult> Search(Int64 parentObjectId, string? query)
@@ -31,7 +31,7 @@ public class AddressController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such params: {parentObjectId}, {query}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
@@ -55,7 +55,7 @@ public class AddressController: ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occured with such id: {objectGuid}");
-            
+
             return StatusCode(500, new StatusResponse
             {
                 Status = "Error",
