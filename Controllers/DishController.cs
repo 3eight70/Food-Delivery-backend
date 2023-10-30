@@ -20,7 +20,7 @@ public class DishController : ControllerBase
     public DishController(IDishService _dishService, ILogger<DishController> logger)
     {
         dishService = _dishService;
-        logger = _logger;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -31,6 +31,14 @@ public class DishController : ControllerBase
         {
             var dishes = await dishService.GetDishes(categories, sorting, vegetarian, page);
             return Ok(dishes);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new StatusResponse
+            {
+                Status = "null",
+                Message = ex.Message
+            });
         }
         catch (Exception ex)
         {
