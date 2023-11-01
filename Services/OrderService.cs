@@ -145,6 +145,11 @@ public class OrderService : IOrderService
             throw new InvalidOperationException("Order with this id doesn't exist");
         }
 
+        if (order.status == Status.Delivered)
+        {
+            throw new InvalidOperationException("This order has already been delivered");
+        }
+
         order.status = Status.Delivered;
 
         await _context.SaveChangesAsync();
