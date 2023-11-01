@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using webNET_Hits_backend_aspnet_project_1.Data;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
@@ -17,7 +18,7 @@ public class DishService : IDishService
         _context = context;
     }
 
-    public async Task<DishPagedListDTO> GetDishes(Category[] categories, DishSorting sorting, bool vegetarian, int page)
+    public async Task<DishPagedListDTO?> GetDishes(Category[] categories, DishSorting sorting, bool vegetarian, int page)
     {
         var dishes = _context.Dishes.AsQueryable();
 
@@ -26,7 +27,15 @@ public class DishService : IDishService
             dishes = dishes.Where(dish => categories.Contains(dish.Category));
         }
 
-        dishes = dishes.Where(dish => dish.IsVegetarian == vegetarian);
+        if (vegetarian == true)
+        {
+            dishes = dishes.Where(dish => dish.IsVegetarian == vegetarian);
+        }
+
+        if (dishes.IsNullOrEmpty())
+        {
+            throw new InvalidOperationException("There aren't dishes with such attributes");
+        }
 
         if (sorting == DishSorting.NameAsc)
         {

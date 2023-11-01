@@ -20,13 +20,13 @@ public class BasketService : IBasketService
 
         var dishes = _context.DishesInCart.Where(cart => cart.userId == userToken.userId).ToList();
         List<DishBasketDTO> dishesInCart = new List<DishBasketDTO>();
-
+        
         foreach (DishInCart dish in dishes)
         {
             var currentDish = _context.Dishes.FirstOrDefault(dsh => dsh.Id == dish.dishId);
             dishesInCart.Add(new DishBasketDTO
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Amount = dish.Amount,
                 dishId = dish.dishId,
                 Image = currentDish.Photo,
@@ -91,7 +91,7 @@ public class BasketService : IBasketService
             throw new InvalidOperationException("User doesn't have this dish in his cart");
         }
 
-        if (!increase)
+        if (!increase || dishInCart.Amount == 1)
         {
             _context.DishesInCart.Remove(dishInCart);
             await _context.SaveChangesAsync();

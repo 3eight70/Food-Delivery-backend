@@ -44,7 +44,30 @@ public class HomeController : Controller
                 "https://mistertako.ru/uploads/products/120b46bc-5f32-11e8-8f7d-00155dd9fd01.jpg", true,
                 Category.Drink);
 
-            _context.Dishes.AddRange(bananaAndAr, bananaAndKiwi, ramen, wokVegetables, belissimo, classicCocktail);
+            Dish cheeseRamen = new Dish(new Guid(), "Рамен сырный", 300,
+                "Сырный бульон с пшеничной лапшой, отварным куриным филе,помидором и сырными шариками. БЖУ на 100 г. Белки, г — 11,8 Жиры, г — 9,82 Углеводы, г — 22,69",
+                "https://mistertako.ru/uploads/products/ccd8e2de-5f36-11e8-8f7d-00155dd9fd01.jpg", false,
+                Category.Soup);
+
+            Dish tomYamKai = new Dish(new Guid(), "Том ям кай", 300,
+                "Знаменитый тайский острый суп со сливками, куриным филе, шампиньонами, красным луком, помидором, перчиком Чили и кинзой. Подается с рисом. БЖУ на 100 г. Белки, г — 5,75 Жиры, г — 3,72 Углеводы, г — 14,76",
+                "https://mistertako.ru/uploads/products/ccd8e2de-5f36-11e8-8f7d-00155dd9fd01.jpg", false,
+                Category.Soup);
+
+            Dish fourCheese = new Dish(new Guid(), "4 сыра", 360,
+                "4 сыра: «Моцарелла», «Гауда», «Фета», «Дор-блю», сливочно-сырный соус, пряные травы",
+                "https://mistertako.ru/uploads/products/77888c7e-8327-11ec-8575-0050569dbef0.", true, Category.Pizza);
+
+            Dish BBQ = new Dish(new Guid(), "Party BBQ", 480,
+                "Бекон, соленый огурчик, брусника, сыр «Моцарелла», сыр «Гауда», соус BBQ",
+                "https://mistertako.ru/uploads/products/839d0250-8327-11ec-8575-0050569dbef0.", false, Category.Pizza);
+
+            Dish chocolateCoctail = new Dish(new Guid(), "Коктейль шоколадный", 170,
+                "Классический молочный коктейль с добавлением шоколадного топпинга",
+                "https://mistertako.ru/uploads/products/120b46be-5f32-11e8-8f7d-00155dd9fd01.jpg", true,
+                Category.Drink);
+                
+            _context.Dishes.AddRange(bananaAndAr, bananaAndKiwi, ramen, wokVegetables, belissimo, classicCocktail, cheeseRamen, tomYamKai,fourCheese, BBQ, chocolateCoctail);
             _context.SaveChanges();
         }
     }

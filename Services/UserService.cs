@@ -133,6 +133,20 @@ public class UserService : IUserService
     public async Task<ActionResult> EditUserProfile(UserEditModel model, string token)
     {
         var userToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+        
+        AsAddrObj? address = _garContext.AsAddrObjs.FirstOrDefault(obj => obj.Objectguid == model.Address);
+        
+        if (address != null)
+        {
+            throw new InvalidOperationException("Address must be a house");
+        }
+        
+        AsHouse? house = _garContext.AsHouses.FirstOrDefault(h => h.Objectguid == model.Address);
+
+        if (model.Address != new Guid() && house == null && address == null)
+        {
+            throw new InvalidOperationException("Address not found");
+        }
 
         if (userToken != null)
         {
@@ -146,8 +160,10 @@ public class UserService : IUserService
                 }
 
                 user.FullName = model.FullName;
+                user.BirthDate = model.BirthDate;
                 user.gender = model.gender;
                 user.Address = model.Address;
+                user.Phone = model.Phone;
             }
         }
 
