@@ -13,13 +13,15 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 [Route("api/dish")]
 public class DishController : ControllerBase
 {
-    private IDishService dishService;
+    private readonly IDishService dishService;
+    private readonly ITokenService _tokenService;
 
     private readonly ILogger<DishController> _logger;
 
-    public DishController(IDishService _dishService, ILogger<DishController> logger)
+    public DishController(IDishService _dishService, ILogger<DishController> logger, ITokenService tokenService)
     {
         dishService = _dishService;
+        _tokenService = tokenService;
         _logger = logger;
     }
 
@@ -61,9 +63,9 @@ public class DishController : ControllerBase
             var dish = dishService.GetDish(id);
             return Ok(dish);
         }
-        catch (InvalidOperationException ex)
+        catch (KeyNotFoundException ex)
         {
-            return BadRequest(new StatusResponse
+            return NotFound(new StatusResponse
             {
                 Status = "Error",
                 Message = ex.Message
@@ -86,8 +88,7 @@ public class DishController : ControllerBase
     [Route("{id}/rating/check")]
     public ActionResult<bool> CheckAuth(Guid id)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -118,8 +119,7 @@ public class DishController : ControllerBase
     [Route("{id}/rating")]
     public async Task<ActionResult> SetRating(Guid id, Int32 ratingScore)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         if (ratingScore < 0 || ratingScore > 10)
         {

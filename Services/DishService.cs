@@ -85,7 +85,7 @@ public class DishService : IDishService
 
         if (dish == null)
         {
-            throw new InvalidOperationException($"Dish with id={id.ToString()} doesn't exist in database");
+            throw new KeyNotFoundException($"Dish with id={id.ToString()} doesn't exist in database");
         }
 
         DishDTO _dish = new DishDTO

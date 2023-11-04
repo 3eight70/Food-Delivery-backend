@@ -64,7 +64,13 @@ public class UserService : IUserService
 
     public async Task<ActionResult> LogoutUser(string token)
     {
-        var currentToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+        ActiveToken? currentToken = _context.ActiveTokens.FirstOrDefault(tkn => tkn.token == token);
+
+        if (currentToken == null)
+        {
+            throw new InvalidOperationException("Current user doesn't have active tokens");
+        }
+        
         _context.ActiveTokens.Remove(currentToken);
         await _context.SaveChangesAsync();
 
@@ -181,12 +187,12 @@ public class UserService : IUserService
         ActiveToken? tkn = _context.ActiveTokens.FirstOrDefault(t => t.userId == user.Id);
         if (tkn != null)
         {
-            tkn.ExpirationDate = DateTime.UtcNow.AddMinutes(30);
+            tkn.ExpirationDate = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:Time"]));
             tkn.token = token;
         }
         else
         {
-            tkn = new ActiveToken(new Guid(), user.Id, token, DateTime.UtcNow.AddMinutes(30));
+            tkn = new ActiveToken(new Guid(), user.Id, token, DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:Time"])));
             await _context.ActiveTokens.AddAsync(tkn);
         }
 
@@ -205,7 +211,7 @@ public class UserService : IUserService
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(30)),
+            expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(Convert.ToDouble(_configuration["JwtSettings:Time"]))),
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"])),
                 SecurityAlgorithms.HmacSha256)
