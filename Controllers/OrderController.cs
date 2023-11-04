@@ -12,12 +12,14 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
+    private readonly ITokenService _tokenService;
 
     private readonly ILogger<OrderController> _logger;
 
-    public OrderController(IOrderService orderService, ILogger<OrderController> logger)
+    public OrderController(IOrderService orderService, ILogger<OrderController> logger, ITokenService tokenService)
     {
         _orderService = orderService;
+        _tokenService = tokenService;
         _logger = logger;
     }
 
@@ -26,8 +28,7 @@ public class OrderController : ControllerBase
     [Route("{id}")]
     public ActionResult<OrderDTO> GetInfo(Guid id)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -57,8 +58,7 @@ public class OrderController : ControllerBase
     [HttpGet]
     public ActionResult<OrderInfoDTO[]> GetOrders()
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -78,8 +78,7 @@ public class OrderController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateOrder(OrderCreateDTO order)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -114,8 +113,7 @@ public class OrderController : ControllerBase
     [Route("{id}/status")]
     public async Task<ActionResult> Confirm(Guid id)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {

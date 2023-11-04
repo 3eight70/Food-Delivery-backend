@@ -56,6 +56,7 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddSingleton<ILogger>(logger);
 
 

@@ -11,12 +11,14 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 public class BasketController : ControllerBase
 {
     private readonly IBasketService _basketService;
+    private readonly ITokenService _tokenService;
 
     private readonly ILogger<BasketController> _logger;
 
-    public BasketController(IBasketService basketService, ILogger<BasketController> logger)
+    public BasketController(IBasketService basketService, ILogger<BasketController> logger, ITokenService tokenService)
     {
         _basketService = basketService;
+        _tokenService = tokenService;
         _logger = logger;
     }
 
@@ -24,8 +26,7 @@ public class BasketController : ControllerBase
     [HttpGet]
     public ActionResult Get()
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -46,8 +47,7 @@ public class BasketController : ControllerBase
     [Route("dish/{dishId}")]
     public async Task<ActionResult> AddDish(Guid dishId)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -74,8 +74,7 @@ public class BasketController : ControllerBase
     [Route("dish/{dishId}")]
     public async Task<ActionResult> Decrease(Guid dishId, bool increase = false)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = _tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {

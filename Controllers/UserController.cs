@@ -13,14 +13,16 @@ namespace webNET_Hits_backend_aspnet_project_1.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private IUserService userService;
+    private readonly IUserService userService;
+    private readonly ITokenService tokenService;
 
     private readonly ILogger<UserController> _logger;
 
-    public UserController(IUserService user, ILogger<UserController> logger)
+    public UserController(IUserService user, ILogger<UserController> logger, ITokenService _tokenService)
     {
         userService = user;
         _logger = logger;
+        tokenService = _tokenService;
     }
 
     [Authorize]
@@ -28,10 +30,29 @@ public class UserController : ControllerBase
     [Route("logout")]
     public async Task<ActionResult> Logout()
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
-        return await userService.LogoutUser(token);
+        try
+        {
+            return await userService.LogoutUser(token);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new StatusResponse
+            {
+                Status = "Error",
+                Message = ex.Message
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error occured with logout method and such token {token}");
+            
+            return StatusCode(500, new StatusResponse{
+                Status = "Error",
+                Message = "Something went wrong"
+            });
+        }
     }
 
     [HttpPost]
@@ -43,10 +64,10 @@ public class UserController : ControllerBase
             var response = userService.LoginUser(model);
             if (response == null)
             {
-                return StatusCode(400, new
+                return StatusCode(400, new StatusResponse
                 {
-                    status = "null",
-                    message = "Login failed"
+                    Status = "null",
+                    Message = "Login failed"
                 });
             }
 
@@ -110,8 +131,7 @@ public class UserController : ControllerBase
     [Route("profile")]
     public ActionResult<UserDTO> Get()
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
@@ -132,8 +152,7 @@ public class UserController : ControllerBase
     [Route("profile")]
     public async Task<ActionResult> Edit(UserEditModel model)
     {
-        var token = Request.Headers["Authorization"].ToString();
-        token = token.Substring("Bearer ".Length);
+        string? token = tokenService.GetToken(Request.Headers["Authorization"].ToString());
 
         try
         {
